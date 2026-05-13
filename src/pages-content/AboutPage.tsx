@@ -1,9 +1,43 @@
 "use client";
 
 import { motion } from 'motion/react';
+import { useEffect, useState } from 'react';
 import { Award, Target, Eye, Users } from 'lucide-react';
+import { api, type Employer } from '@/lib/api-client';
+
+function initials(name: string): string {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase() ?? '')
+    .join('');
+}
 
 export function AboutPage() {
+  const [team, setTeam] = useState<Employer[]>([]);
+  const [stats, setStats] = useState({ projects: 0, clients: 0, team: 0, years: 20 });
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const [emp, proj] = await Promise.all([
+          api.get<{ items: Employer[] }>('/api/employers'),
+          api.get<{ items: unknown[] }>('/api/projects'),
+        ]);
+        setTeam(emp.items.slice(0, 6));
+        setStats({
+          projects: proj.items.length,
+          clients: emp.items.length * 50 || 100,
+          team: emp.items.length,
+          years: 20,
+        });
+      } catch {
+        // soft-fail
+      }
+    })();
+  }, []);
+
   return (
     <div className="min-h-screen pt-20">
       <section className="relative bg-gradient-to-br from-secondary via-[#1a1a1a] to-secondary text-white py-20 overflow-hidden">
@@ -175,29 +209,38 @@ export function AboutPage() {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              { name: 'Michael Roberts', role: 'CEO & Founder', initials: 'MR' },
-              { name: 'Jennifer Clarke', role: 'Chief Operations Officer', initials: 'JC' },
-              { name: 'David Thompson', role: 'Chief Engineer', initials: 'DT' },
-            ].map((member, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                whileHover={{ y: -10 }}
-                className="bg-gray-50 p-8 rounded-lg text-center"
-              >
-                <div className="w-24 h-24 bg-primary rounded-full flex items-center justify-center mx-auto mb-4 text-white text-2xl">
-                  {member.initials}
-                </div>
-                <h3 className="text-xl text-secondary mb-2">{member.name}</h3>
-                <p className="text-gray-600">{member.role}</p>
-              </motion.div>
-            ))}
-          </div>
+          {team.length === 0 ? (
+            <p className="text-center text-gray-400">Team loading…</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {team.slice(0, 3).map((member, index) => (
+                <motion.div
+                  key={member.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  whileHover={{ y: -10 }}
+                  className="bg-gray-50 p-8 rounded-lg text-center"
+                >
+                  {member.photo_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={member.photo_url}
+                      alt={member.full_name}
+                      className="w-24 h-24 object-cover rounded-full mx-auto mb-4"
+                    />
+                  ) : (
+                    <div className="w-24 h-24 bg-primary rounded-full flex items-center justify-center mx-auto mb-4 text-white text-2xl">
+                      {initials(member.full_name)}
+                    </div>
+                  )}
+                  <h3 className="text-xl text-secondary mb-2">{member.full_name}</h3>
+                  <p className="text-gray-600">{member.role || ''}</p>
+                </motion.div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -205,10 +248,10 @@ export function AboutPage() {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
             {[
-              { number: '500+', label: 'Projects Completed' },
-              { number: '1200+', label: 'Happy Clients' },
-              { number: '150+', label: 'Team Members' },
-              { number: '20+', label: 'Years Experience' },
+              { number: `${stats.projects}+`, label: 'Projects Completed' },
+              { number: `${stats.clients}+`, label: 'Happy Clients' },
+              { number: `${stats.team}+`, label: 'Team Members' },
+              { number: `${stats.years}+`, label: 'Years Experience' },
             ].map((stat, index) => (
               <motion.div
                 key={index}

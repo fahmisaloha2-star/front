@@ -3,14 +3,16 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, LogIn, LayoutDashboard, LogOut } from "lucide-react";
+import { Menu, X, LogIn, LayoutDashboard, LogOut, ShoppingCart } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useCart } from "@/hooks/useCart";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
   const { user, isAdmin, signOut } = useAuth();
+  const { count: cartCount } = useCart();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -26,6 +28,8 @@ export function Navbar() {
     { path: "/services", label: "Services" },
     { path: "/projects", label: "Projects" },
     { path: "/shop", label: "Shop" },
+    { path: "/team", label: "Team" },
+    { path: "/news", label: "News" },
     { path: "/contact", label: "Contact" },
   ];
 
@@ -59,6 +63,18 @@ export function Navbar() {
                 {link.label}
               </Link>
             ))}
+            <Link
+              href="/cart"
+              className="relative text-white hover:text-primary transition-colors"
+              aria-label="Cart"
+            >
+              <ShoppingCart size={20} />
+              {cartCount > 0 && (
+                <span className="absolute -top-1.5 -right-2 bg-primary text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
             {user ? (
               <div className="flex items-center gap-3">
                 {isAdmin && (
@@ -93,12 +109,22 @@ export function Navbar() {
             )}
           </div>
 
-          <button
-            className="md:hidden text-white"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
-          </button>
+          <div className="md:hidden flex items-center gap-4">
+            <Link href="/cart" className="relative text-white" aria-label="Cart">
+              <ShoppingCart size={24} />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-2 bg-primary text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
+            <button
+              className="text-white"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+            </button>
+          </div>
         </div>
 
         {isMobileMenuOpen && (

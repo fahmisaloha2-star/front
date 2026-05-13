@@ -1,35 +1,68 @@
 "use client";
 
 import { motion } from "motion/react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { ShoppingCart, Star, Search, Plus, Minus, ChevronDown, ChevronUp } from "lucide-react";
+import { ShoppingCart, Star, Search, Plus, Minus, ChevronDown, ChevronUp, Loader2 } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
-import { brands, categories, products } from "@/lib/products";
+import { api, type Product as ApiProduct, type Category } from "@/lib/api-client";
+import { useCart } from "@/hooks/useCart";
+import { toast } from "sonner";
+
+type UiProduct = {
+  id: string;
+  name: string;
+  category: string;
+  price: number;
+  image: string;
+  description: string;
+  rating: number;
+  inStock: boolean;
+};
+
+const mapProduct = (p: ApiProduct): UiProduct => ({
+  id: p.id,
+  name: p.name,
+  category: p.category || "Other",
+  price: Number(p.price),
+  image: p.image_url || "https://placehold.co/600x400?text=No+image",
+  description: p.description || "",
+  rating: 4.7,
+  inStock: (p.stock ?? 0) > 0,
+});
 
 export function ShopPage() {
-  const [cart, setCart] = useState<{ [key: number]: number }>({});
+  const [products, setProducts] = useState<UiProduct[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState(true);
+  const [categories, setCategories] = useState<string[]>([]);
+  const { items: cartItems, add: cartAdd, setQty: cartSetQty, count: cartCount } = useCart();
+  const cart = useMemo(
+    () => Object.fromEntries(cartItems.map((i) => [i.product_id, i.qty])),
+    [cartItems]
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [showAllCategories, setShowAllCategories] = useState(false);
-  const [showAllBrands, setShowAllBrands] = useState(false);
   const [priceRange, setPriceRange] = useState<[number, number]>([2, 2299]);
   const [pendingPriceRange, setPendingPriceRange] = useState<[number, number]>([2, 2299]);
 
+  useEffect(() => {
+    api
+      .get<{ items: ApiProduct[] }>("/api/products")
+      .then((d) => setProducts(d.items.map(mapProduct)))
+      .finally(() => setLoadingProducts(false));
+    api
+      .get<{ items: Category[] }>("/api/categories")
+      .then((d) => setCategories(d.items.map((c) => c.name)))
+      .catch(() => setCategories([]));
+  }, []);
+
   const visibleCategories = showAllCategories ? categories : categories.slice(0, 5);
-  const visibleBrands = showAllBrands ? brands : brands.slice(0, 5);
 
   const toggleCategory = (cat: string) => {
     setSelectedCategories((prev) =>
       prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat],
-    );
-  };
-
-  const toggleBrand = (brand: string) => {
-    setSelectedBrands((prev) =>
-      prev.includes(brand) ? prev.filter((b) => b !== brand) : [...prev, brand],
     );
   };
 
@@ -42,29 +75,33 @@ export function ShopPage() {
       products.filter((product) => {
         const matchesCategory =
           selectedCategories.length === 0 || selectedCategories.includes(product.category);
-        const matchesBrand = selectedBrands.length === 0 || selectedBrands.includes(product.brand);
         const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1];
-        return matchesCategory && matchesBrand && matchesSearch && matchesPrice;
+        return matchesCategory && matchesSearch && matchesPrice;
       }),
-    [selectedCategories, selectedBrands, searchQuery, priceRange],
+    [products, selectedCategories, searchQuery, priceRange],
   );
 
-  const addToCart = (productId: number) => {
-    setCart({ ...cart, [productId]: (cart[productId] || 0) + 1 });
+  const addToCart = (product: UiProduct) => {
+    cartAdd(
+      {
+        product_id: product.id,
+        name: product.name,
+        category: product.category,
+        price: product.price,
+        image: product.image,
+      },
+      1
+    );
+    toast.success(`${product.name} added to cart`);
   };
 
-  const removeFromCart = (productId: number) => {
-    if (cart[productId] > 1) {
-      setCart({ ...cart, [productId]: cart[productId] - 1 });
-    } else {
-      const newCart = { ...cart };
-      delete newCart[productId];
-      setCart(newCart);
-    }
+  const removeFromCart = (productId: string) => {
+    const current = cart[productId] || 0;
+    cartSetQty(productId, current - 1);
   };
 
-  const getTotalItems = () => Object.values(cart).reduce((sum, qty) => sum + qty, 0);
+  const getTotalItems = () => cartCount;
 
   const formatPrice = (value: number) =>
     `${value.toLocaleString("fr-FR", { minimumFractionDigits: 3 })} DT`;
@@ -190,42 +227,19 @@ export function ShopPage() {
                   )}
                 </div>
 
-                <div className="border-t border-gray-200 pt-6">
-                  <h3 className="text-gray-700 font-semibold mb-4">Marque</h3>
-                  <div className="space-y-3">
-                    {visibleBrands.map((brand) => (
-                      <label key={brand} className="flex items-center gap-3 cursor-pointer group">
-                        <Checkbox
-                          checked={selectedBrands.includes(brand)}
-                          onCheckedChange={() => toggleBrand(brand)}
-                        />
-                        <span className="text-sm text-gray-700 group-hover:text-primary transition-colors">
-                          {brand}
-                        </span>
-                      </label>
-                    ))}
-                  </div>
-                  {brands.length > 5 && (
-                    <button
-                      onClick={() => setShowAllBrands(!showAllBrands)}
-                      className="flex items-center gap-1 text-blue-500 text-sm mt-3 hover:underline"
-                    >
-                      {showAllBrands ? (
-                        <>
-                          <ChevronUp size={14} /> Voir Moins
-                        </>
-                      ) : (
-                        <>
-                          <ChevronDown size={14} /> Voir Plus
-                        </>
-                      )}
-                    </button>
-                  )}
-                </div>
               </div>
             </aside>
 
             <div className="flex-1">
+              {loadingProducts ? (
+                <div className="flex justify-center py-20">
+                  <Loader2 className="animate-spin text-primary" size={40} />
+                </div>
+              ) : filteredProducts.length === 0 ? (
+                <div className="text-center text-gray-500 py-20">
+                  No products match your filters.
+                </div>
+              ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {filteredProducts.map((product, index) => (
                   <motion.div
@@ -259,7 +273,6 @@ export function ShopPage() {
                       </div>
 
                       <div className="px-6 pt-6">
-                        <div className="text-xs text-gray-500 mb-1">{product.brand}</div>
                         <div className="text-sm text-primary mb-2">{product.category}</div>
                         <h3 className="text-xl text-secondary mb-2 hover:text-primary transition-colors">
                           {product.name}
@@ -290,7 +303,7 @@ export function ShopPage() {
                                   {cart[product.id]}
                                 </motion.span>
                                 <button
-                                  onClick={() => addToCart(product.id)}
+                                  onClick={() => addToCart(product)}
                                   className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center hover:bg-opacity-90 transition-all"
                                 >
                                   <Plus size={16} />
@@ -300,7 +313,7 @@ export function ShopPage() {
                               <motion.button
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
-                                onClick={() => addToCart(product.id)}
+                                onClick={() => addToCart(product)}
                                 className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-all flex items-center gap-2"
                               >
                                 <ShoppingCart size={18} />
@@ -314,17 +327,6 @@ export function ShopPage() {
                   </motion.div>
                 ))}
               </div>
-
-              {filteredProducts.length === 0 && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-center py-20"
-                >
-                  <p className="text-gray-600 text-xl">
-                    Aucun produit ne correspond à vos critères.
-                  </p>
-                </motion.div>
               )}
             </div>
           </div>

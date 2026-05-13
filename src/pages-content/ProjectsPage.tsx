@@ -1,125 +1,45 @@
 "use client";
 
 import { motion, AnimatePresence } from 'motion/react';
-import { useState } from 'react';
-import { X, ZoomIn, Calendar, MapPin } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { X, ZoomIn, Calendar, MapPin, Loader2 } from 'lucide-react';
+import { api, type Project as ApiProject } from '@/lib/api-client';
+
+type UiProject = {
+  id: string;
+  title: string;
+  category: string;
+  image: string;
+  location: string;
+  date: string;
+  description: string;
+};
+
+const mapProject = (p: ApiProject): UiProject => ({
+  id: p.id,
+  title: p.title,
+  category: 'All',
+  image: p.cover_url || 'https://placehold.co/800x500?text=No+image',
+  location: p.location || '—',
+  date: p.year ? String(p.year) : new Date(p.created_at).toLocaleDateString(undefined, { month: 'long', year: 'numeric' }),
+  description: p.description || '',
+});
 
 export function ProjectsPage() {
   const [activeCategory, setActiveCategory] = useState('All');
-  const [selectedProject, setSelectedProject] = useState<any>(null);
+  const [selectedProject, setSelectedProject] = useState<UiProject | null>(null);
+  const [projects, setProjects] = useState<UiProject[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const categories = ['All', 'Warehouses', 'Steel Buildings', 'Industrial Projects', 'Roofing Structures', 'Staircases', 'Custom Metal Work'];
+  useEffect(() => {
+    api
+      .get<{ items: ApiProject[] }>('/api/projects')
+      .then((d) => setProjects(d.items.map(mapProject)))
+      .finally(() => setLoading(false));
+  }, []);
 
-  const projects = [
-    {
-      id: 1,
-      title: 'Industrial Warehouse Complex',
-      category: 'Warehouses',
-      image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800',
-      location: 'Chicago, IL',
-      date: 'March 2026',
-      description: 'A 50,000 sq ft steel-frame warehouse with advanced climate control systems.',
-    },
-    {
-      id: 2,
-      title: 'Steel Frame Office Building',
-      category: 'Steel Buildings',
-      image: 'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=800',
-      location: 'New York, NY',
-      date: 'February 2026',
-      description: 'Modern 12-story office tower with exposed steel architecture.',
-    },
-    {
-      id: 3,
-      title: 'Manufacturing Facility',
-      category: 'Industrial Projects',
-      image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=800',
-      location: 'Detroit, MI',
-      date: 'January 2026',
-      description: 'Complete industrial manufacturing plant with heavy-duty steel framework.',
-    },
-    {
-      id: 4,
-      title: 'Metal Roof Installation',
-      category: 'Roofing Structures',
-      image: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800',
-      location: 'Boston, MA',
-      date: 'December 2025',
-      description: 'Premium standing seam metal roofing for commercial complex.',
-    },
-    {
-      id: 5,
-      title: 'Industrial Staircase System',
-      category: 'Staircases',
-      image: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=800',
-      location: 'Philadelphia, PA',
-      date: 'November 2025',
-      description: 'Multi-level industrial staircase with safety platforms and railings.',
-    },
-    {
-      id: 6,
-      title: 'Custom Metal Canopy',
-      category: 'Custom Metal Work',
-      image: 'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=800',
-      location: 'Miami, FL',
-      date: 'October 2025',
-      description: 'Artistic architectural metal canopy with custom fabrication.',
-    },
-    {
-      id: 7,
-      title: 'Distribution Center',
-      category: 'Warehouses',
-      image: 'https://images.unsplash.com/photo-1586528116493-a029325540fa?w=800',
-      location: 'Dallas, TX',
-      date: 'September 2025',
-      description: 'Large-scale logistics warehouse with automated systems.',
-    },
-    {
-      id: 8,
-      title: 'Commercial Steel Structure',
-      category: 'Steel Buildings',
-      image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800',
-      location: 'Seattle, WA',
-      date: 'August 2025',
-      description: 'Contemporary commercial building with exposed steel beams.',
-    },
-    {
-      id: 9,
-      title: 'Factory Expansion',
-      category: 'Industrial Projects',
-      image: 'https://images.unsplash.com/photo-1581092921461-eab62e97a780?w=800',
-      location: 'Cleveland, OH',
-      date: 'July 2025',
-      description: 'Production facility expansion with reinforced steel framework.',
-    },
-    {
-      id: 10,
-      title: 'Standing Seam Metal Roof',
-      category: 'Roofing Structures',
-      image: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800',
-      location: 'Portland, OR',
-      date: 'June 2025',
-      description: 'Energy-efficient metal roofing system for corporate campus.',
-    },
-    {
-      id: 11,
-      title: 'Safety Staircase & Platform',
-      category: 'Staircases',
-      image: 'https://images.unsplash.com/photo-1581094271901-8022df4466f9?w=800',
-      location: 'Atlanta, GA',
-      date: 'May 2025',
-      description: 'Industrial-grade access staircase with OSHA-compliant safety features.',
-    },
-    {
-      id: 12,
-      title: 'Architectural Metal Features',
-      category: 'Custom Metal Work',
-      image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800',
-      location: 'Austin, TX',
-      date: 'April 2025',
-      description: 'Bespoke metal artwork and structural elements for modern building.',
-    },
-  ];
+  const categories = ['All'];
+
 
   const filteredProjects = activeCategory === 'All'
     ? projects
@@ -198,6 +118,15 @@ export function ProjectsPage() {
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
             >
+              {loading ? (
+                <div className="flex justify-center py-20">
+                  <Loader2 className="animate-spin text-primary" size={40} />
+                </div>
+              ) : filteredProjects.length === 0 ? (
+                <div className="text-center text-gray-500 py-20">
+                  No projects yet — check back soon.
+                </div>
+              ) : (
               <div className="columns-1 gap-x-6 space-y-6 sm:columns-2 xl:columns-3">
                 {filteredProjects.map((project, index) => (
                   <motion.div
@@ -264,6 +193,7 @@ export function ProjectsPage() {
                   </motion.div>
                 ))}
               </div>
+              )}
             </motion.div>
           </AnimatePresence>
         </div>

@@ -25,13 +25,16 @@ export function AuthPage() {
   const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, isAdmin, rolesLoaded } = useAuth();
   const searchParams = useSearchParams();
   const redirect = searchParams?.get("redirect") ?? undefined;
 
   useEffect(() => {
-    if (user) router.push(redirect || "/client");
-  }, [user, router, redirect]);
+    if (!user || !rolesLoaded) return;
+    if (redirect) router.push(redirect);
+    else if (isAdmin) router.push("/admin");
+    else router.push("/client");
+  }, [user, isAdmin, rolesLoaded, router, redirect]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

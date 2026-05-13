@@ -9,6 +9,7 @@ type AuthCtx = {
   session: Session | null;
   loading: boolean;
   isAdmin: boolean;
+  rolesLoaded: boolean;
   signOut: () => Promise<void>;
 };
 
@@ -17,6 +18,7 @@ const Ctx = createContext<AuthCtx>({
   session: null,
   loading: true,
   isAdmin: false,
+  rolesLoaded: false,
   signOut: async () => {},
 });
 
@@ -25,23 +27,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [rolesLoaded, setRolesLoaded] = useState(false);
+
+  async function fetchRole(userId: string) {
+    setRolesLoaded(false);
+    const { data } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId)
+      .eq("role", "admin")
+      .maybeSingle();
+    setIsAdmin(!!data);
+    setRolesLoaded(true);
+  }
 
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
       setSession(s);
       setUser(s?.user ?? null);
       if (s?.user) {
-        setTimeout(async () => {
-          const { data } = await supabase
-            .from("user_roles")
-            .select("role")
-            .eq("user_id", s.user.id)
-            .eq("role", "admin")
-            .maybeSingle();
-          setIsAdmin(!!data);
-        }, 0);
+        // Defer the role query to avoid a re-entrant supabase call inside the listener.
+        setTimeout(() => fetchRole(s.user.id), 0);
       } else {
         setIsAdmin(false);
+        setRolesLoaded(true);
       }
     });
 
@@ -50,13 +59,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(s?.user ?? null);
       setLoading(false);
       if (s?.user) {
-        supabase
-          .from("user_roles")
-          .select("role")
-          .eq("user_id", s.user.id)
-          .eq("role", "admin")
-          .maybeSingle()
-          .then(({ data }) => setIsAdmin(!!data));
+        fetchRole(s.user.id);
+      } else {
+        setRolesLoaded(true);
       }
     });
 
@@ -68,7 +73,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <Ctx.Provider value={{ user, session, loading, isAdmin, signOut }}>
+    <Ctx.Provider value={{ user, session, loading, isAdmin, rolesLoaded, signOut }}>
       {children}
     </Ctx.Provider>
   );

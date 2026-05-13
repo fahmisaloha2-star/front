@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import {
@@ -18,15 +18,64 @@ import {
   Clock,
   Hash,
   BadgeCheck,
+  Loader2,
 } from "lucide-react";
-import { getProductById, products } from "@/lib/products";
+import { api, type Product as ApiProduct } from "@/lib/api-client";
 
 type TabKey = "description" | "specifications" | "features" | "reviews";
+
+type UiProduct = {
+  id: string;
+  name: string;
+  category: string;
+  brand: string;
+  sku: string;
+  price: number;
+  image: string;
+  gallery: string[];
+  rating: number;
+  reviewCount: number;
+  reviews: Array<{ id: number; author: string; date: string; rating: number; title: string; comment: string; verified: boolean }>;
+  inStock: boolean;
+  stockQuantity: number;
+  deliveryTime: string;
+  weight: string;
+  packageDimensions: string;
+  description: string;
+  longDescription: string;
+  features: string[];
+  specifications: Record<string, string>;
+};
+
+const mapProduct = (p: ApiProduct): UiProduct => ({
+  id: p.id,
+  name: p.name,
+  category: p.category || "Other",
+  brand: "MIS Steel",
+  sku: p.id.slice(0, 8).toUpperCase(),
+  price: Number(p.price),
+  image: p.image_url || "https://placehold.co/600x400?text=No+image",
+  gallery: p.image_url ? [p.image_url] : [],
+  rating: 4.7,
+  reviewCount: 0,
+  reviews: [],
+  inStock: (p.stock ?? 0) > 0,
+  stockQuantity: p.stock ?? 0,
+  deliveryTime: "Contact us for delivery time",
+  weight: "—",
+  packageDimensions: "—",
+  description: p.description || "",
+  longDescription: p.description || "",
+  features: [],
+  specifications: {},
+});
 
 export function ProductDetailPage() {
   const params = useParams<{ id: string }>();
   const id = params?.id;
-  const product = getProductById(Number(id));
+  const [product, setProduct] = useState<UiProduct | null>(null);
+  const [relatedProducts, setRelatedProducts] = useState<UiProduct[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const [quantity, setQuantity] = useState(1);
   const [activeImage, setActiveImage] = useState(0);
@@ -34,6 +83,35 @@ export function ProductDetailPage() {
 
   const formatPrice = (value: number) =>
     `${value.toLocaleString("fr-FR", { minimumFractionDigits: 3 })} DT`;
+
+  useEffect(() => {
+    if (!id) return;
+    (async () => {
+      try {
+        const d = await api.get<{ product: ApiProduct }>(`/api/products/${id}`);
+        const mapped = mapProduct(d.product);
+        setProduct(mapped);
+        const list = await api.get<{ items: ApiProduct[] }>(
+          `/api/products?category=${encodeURIComponent(mapped.category)}`
+        );
+        setRelatedProducts(
+          list.items.filter((p) => p.id !== mapped.id).slice(0, 3).map(mapProduct)
+        );
+      } catch {
+        setProduct(null);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen pt-32 pb-20 bg-gray-50 flex items-center justify-center">
+        <Loader2 className="animate-spin text-primary" size={40} />
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -52,10 +130,7 @@ export function ProductDetailPage() {
     );
   }
 
-  const gallery = product.gallery ?? [product.image];
-  const relatedProducts = products
-    .filter((p) => p.id !== product.id && p.category === product.category)
-    .slice(0, 3);
+  const gallery = product.gallery.length > 0 ? product.gallery : [product.image];
 
   const formatDate = (iso: string) =>
     new Date(iso).toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" });

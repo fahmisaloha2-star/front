@@ -2,18 +2,38 @@
 
 import { motion } from 'motion/react';
 import Link from 'next/link';
-import { Building2, Wrench, Factory, Zap, ShieldCheck, Users } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { Users } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { api, type Service } from '@/lib/api-client';
+import { iconFor } from '@/lib/icon-map';
 
 export function HomePage() {
   const [counts, setCounts] = useState({ projects: 0, clients: 0, experience: 0 });
+  const [services, setServices] = useState<Service[]>([]);
 
   useEffect(() => {
-    const animateCount = (target: number, key: string, duration: number) => {
+    (async () => {
+      try {
+        const [projectsRes, employersRes, servicesRes] = await Promise.all([
+          api.get<{ items: unknown[] }>('/api/projects'),
+          api.get<{ items: unknown[] }>('/api/employers'),
+          api.get<{ items: Service[] }>('/api/services'),
+        ]);
+        const targetProjects = projectsRes.items.length;
+        const targetClients = employersRes.items.length * 50 || 100;
+        setServices(servicesRes.items.slice(0, 6));
+        animateCount(targetProjects, 'projects', 1500);
+        animateCount(targetClients, 'clients', 1500);
+        animateCount(20, 'experience', 1500);
+      } catch {
+        // soft-fail: keep zeros and empty services
+      }
+    })();
+
+    function animateCount(target: number, key: string, duration: number) {
       const steps = 60;
       const increment = target / steps;
       let current = 0;
-
       const interval = setInterval(() => {
         current += increment;
         if (current >= target) {
@@ -22,26 +42,7 @@ export function HomePage() {
         }
         setCounts((prev) => ({ ...prev, [key]: Math.floor(current) }));
       }, duration / steps);
-    };
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            animateCount(500, 'projects', 2000);
-            animateCount(1200, 'clients', 2000);
-            animateCount(20, 'experience', 2000);
-            observer.disconnect();
-          }
-        });
-      },
-      { threshold: 0.5 }
-    );
-
-    const element = document.getElementById('stats-section');
-    if (element) observer.observe(element);
-
-    return () => observer.disconnect();
+    }
   }, []);
 
   return (
@@ -152,30 +153,30 @@ export function HomePage() {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              { icon: Building2, title: 'Metal Structures', desc: 'Custom steel frameworks for any application' },
-              { icon: Factory, title: 'Steel Fabrication', desc: 'Precision manufacturing of steel components' },
-              { icon: Factory, title: 'Industrial Buildings', desc: 'Complete industrial facility construction' },
-              { icon: Wrench, title: 'Welding Services', desc: 'Expert welding and metal joining' },
-              { icon: Zap, title: 'Installation & Maintenance', desc: 'Professional setup and ongoing support' },
-              { icon: ShieldCheck, title: 'Custom Metal Projects', desc: 'Bespoke metalwork solutions' },
-            ].map((service, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                whileHover={{ y: -10 }}
-                className="bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition-all"
-              >
-                <service.icon className="w-12 h-12 text-primary mb-4" />
-                <h3 className="text-xl text-secondary mb-3">{service.title}</h3>
-                <p className="text-gray-600">{service.desc}</p>
-              </motion.div>
-            ))}
-          </div>
+          {services.length === 0 ? (
+            <p className="text-center text-gray-400">Services loading…</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {services.map((service, index) => {
+                const Icon = iconFor(service.icon);
+                return (
+                  <motion.div
+                    key={service.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1 }}
+                    whileHover={{ y: -10 }}
+                    className="bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition-all"
+                  >
+                    <Icon className="w-12 h-12 text-primary mb-4" />
+                    <h3 className="text-xl text-secondary mb-3">{service.title}</h3>
+                    <p className="text-gray-600">{service.short_desc}</p>
+                  </motion.div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </section>
 
