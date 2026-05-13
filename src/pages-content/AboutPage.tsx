@@ -2,20 +2,10 @@
 
 import { motion } from 'motion/react';
 import { useEffect, useState } from 'react';
-import { Award, Target, Eye, Users } from 'lucide-react';
+import { Award, Target, Eye } from 'lucide-react';
 import { api, type Employer } from '@/lib/api-client';
 
-function initials(name: string): string {
-  return name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((w) => w[0]?.toUpperCase() ?? '')
-    .join('');
-}
-
 export function AboutPage() {
-  const [team, setTeam] = useState<Employer[]>([]);
   const [stats, setStats] = useState({ projects: 0, clients: 0, team: 0, years: 20 });
 
   useEffect(() => {
@@ -25,7 +15,6 @@ export function AboutPage() {
           api.get<{ items: Employer[] }>('/api/employers'),
           api.get<{ items: unknown[] }>('/api/projects'),
         ]);
-        setTeam(emp.items.slice(0, 6));
         setStats({
           projects: proj.items.length,
           clients: emp.items.length * 50 || 100,
@@ -82,19 +71,15 @@ export function AboutPage() {
             >
               <h2 className="text-4xl text-secondary mb-6">Notre histoire</h2>
               <p className="text-gray-700 mb-4">
-                Fondée en 2005, MIS Metal Construction est passée d&apos;un petit atelier de fabrication à l&apos;un
-                des noms les plus fiables de la région en construction métallique industrielle. Notre engagement
-                envers la qualité, la sécurité et l&apos;innovation est la pierre angulaire de notre réussite.
-              </p>
-              <p className="text-gray-700 mb-4">
-                Avec une équipe d&apos;ingénieurs, soudeurs et chefs de projet hautement qualifiés, nous avons
-                livré plus de 500 projets dans divers secteurs : industrie manufacturière, logistique, énergie
-                et construction commerciale.
+                M.B.S est une entreprise tunisienne fondée en 2015, spécialisée dans les constructions
+                et fabrications métalliques. Grâce à une longue expérience dans le domaine, nous proposons
+                des solutions professionnelles adaptées aux besoins du marché local et international.
               </p>
               <p className="text-gray-700">
-                Aujourd&apos;hui, nous continuons à repousser les limites du possible en construction métallique,
-                en utilisant des technologies de pointe et des pratiques durables pour livrer des résultats
-                exceptionnels à nos clients.
+                Notre atelier est situé dans la région du Cap Bon, à environ 70 km de Tunis, sur une
+                superficie de 1 500 m² équipée de matériels modernes. Nous travaillons continuellement
+                pour offrir des réalisations de haute qualité et renforcer notre présence sur les marchés
+                nationaux et étrangers.
               </p>
             </motion.div>
 
@@ -194,55 +179,6 @@ export function AboutPage() {
               </motion.div>
             ))}
           </div>
-        </div>
-      </section>
-
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl text-secondary mb-4">Notre équipe de direction</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Des professionnels expérimentés dédiés à l&apos;excellence
-            </p>
-          </motion.div>
-
-          {team.length === 0 ? (
-            <p className="text-center text-gray-400">Chargement de l&apos;équipe…</p>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {team.slice(0, 3).map((member, index) => (
-                <motion.div
-                  key={member.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  whileHover={{ y: -10 }}
-                  className="bg-gray-50 p-8 rounded-lg text-center"
-                >
-                  {member.photo_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={member.photo_url}
-                      alt={member.full_name}
-                      className="w-24 h-24 object-cover rounded-full mx-auto mb-4"
-                    />
-                  ) : (
-                    <div className="w-24 h-24 bg-primary rounded-full flex items-center justify-center mx-auto mb-4 text-white text-2xl">
-                      {initials(member.full_name)}
-                    </div>
-                  )}
-                  <h3 className="text-xl text-secondary mb-2">{member.full_name}</h3>
-                  <p className="text-gray-600">{member.role || ''}</p>
-                </motion.div>
-              ))}
-            </div>
-          )}
         </div>
       </section>
 

@@ -352,9 +352,17 @@ export function ContactPage() {
   };
 
   const INFO_CARDS = [
-    { icon: MapPin, title: 'Notre adresse', lines: ['123 Industrial Avenue', 'Construction City, CC 12345'] },
-    { icon: Phone, title: 'Téléphones', lines: ['Bureau : +1 (555) 123-4567', 'Mobile : +1 (555) 987-6543'] },
-    { icon: Mail, title: 'Adresses email', lines: ['info@mismetal.com', 'sales@mismetal.com'] },
+    { icon: MapPin, title: 'Notre adresse', lines: ['ZI Beni Khiar 8060', 'Tunisie'] },
+    {
+      icon: Phone,
+      title: 'Téléphones',
+      lines: ['+216 31 402 151', '+216 52 448 549', '+216 24 088 087', 'Fax : +216 32 402 151'],
+    },
+    {
+      icon: Mail,
+      title: 'Adresses email',
+      lines: ['mbs.metalconstruction@gmail.com', 'medsalah.mbs@gmail.com'],
+    },
     { icon: Clock, title: "Horaires d'ouverture", lines: ['Lun–Ven : 8h00 – 18h00', 'Samedi : 9h00 – 14h00'] },
   ];
 
@@ -622,7 +630,12 @@ export function ContactPage() {
                 <Headphones size={28} className="text-primary mb-4 relative z-10" />
                 <h3 className="text-white mb-1 relative z-10">Support d&apos;urgence</h3>
                 <p className="text-gray-400 text-sm mb-4 relative z-10">Pour les urgences — disponible 24/7 pour les clients existants.</p>
-                <div className="text-primary text-2xl font-medium relative z-10">+1 (555) 911-HELP</div>
+                <a
+                  href="tel:+21624088087"
+                  className="text-primary text-2xl font-medium relative z-10 hover:underline"
+                >
+                  +216 24 088 087
+                </a>
               </motion.div>
 
               {/* Social quick links */}
@@ -686,7 +699,7 @@ export function ContactPage() {
               <p className="text-white/80">Notre équipe est prête à donner vie à votre vision.</p>
             </div>
             <motion.a
-              href="tel:+15551234567"
+              href="tel:+21631402151"
               whileHover={{ scale: 1.05, backgroundColor: '#fff', color: '#FF6B00' }}
               whileTap={{ scale: 0.97 }}
               className="flex items-center gap-3 bg-white/10 border-2 border-white/30 text-white px-8 py-4 rounded-2xl font-medium backdrop-blur-sm transition-colors duration-300 flex-shrink-0"

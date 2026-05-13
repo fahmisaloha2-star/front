@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Facebook, Twitter, Linkedin, Instagram, Mail, Phone, MapPin } from 'lucide-react';
+import { Facebook, Mail, Phone, MapPin } from 'lucide-react';
 
 export function Footer() {
   return (
@@ -16,7 +16,8 @@ export function Footer() {
               />
             </div>
             <p className="text-gray-300 text-sm">
-              L&apos;excellence en construction métallique et structures en acier depuis 2005.
+              M.B.S est une entreprise tunisienne fondée en 2015, spécialisée dans les constructions
+              et fabrications métalliques.
             </p>
           </div>
 
@@ -66,29 +67,58 @@ export function Footer() {
             <div className="space-y-3">
               <div className="flex items-start gap-2 text-gray-300 text-sm">
                 <MapPin size={18} className="mt-1 flex-shrink-0 text-primary" />
-                <span>123 Industrial Ave, Construction City, CC 12345</span>
+                <span>ZI Beni Khiar 8060, Tunisie</span>
               </div>
               <div className="flex items-center gap-2 text-gray-300 text-sm">
                 <Phone size={18} className="flex-shrink-0 text-primary" />
-                <span>+1 (555) 123-4567</span>
+                <a href="tel:+21631402151" className="hover:text-primary">+216 31 402 151</a>
+              </div>
+              <div className="flex items-center gap-2 text-gray-300 text-sm">
+                <Phone size={18} className="flex-shrink-0 text-primary" />
+                <a href="tel:+21652448549" className="hover:text-primary">+216 52 448 549</a>
+              </div>
+              <div className="flex items-center gap-2 text-gray-300 text-sm">
+                <Phone size={18} className="flex-shrink-0 text-primary" />
+                <a href="tel:+21624088087" className="hover:text-primary">+216 24 088 087</a>
               </div>
               <div className="flex items-center gap-2 text-gray-300 text-sm">
                 <Mail size={18} className="flex-shrink-0 text-primary" />
-                <span>info@mismetal.com</span>
+                <a href="mailto:mbs.metalconstruction@gmail.com" className="hover:text-primary break-all">
+                  mbs.metalconstruction@gmail.com
+                </a>
+              </div>
+              <div className="flex items-center gap-2 text-gray-300 text-sm">
+                <Mail size={18} className="flex-shrink-0 text-primary" />
+                <a href="mailto:medsalah.mbs@gmail.com" className="hover:text-primary break-all">
+                  medsalah.mbs@gmail.com
+                </a>
               </div>
             </div>
             <div className="flex gap-3 mt-4">
-              <a href="#" className="w-8 h-8 bg-primary rounded flex items-center justify-center hover:bg-opacity-80 transition-all">
+              <a
+                href="https://www.facebook.com/M.B.S.metalconstruction"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Facebook M.B.S metal construction"
+                className="w-8 h-8 bg-primary rounded flex items-center justify-center hover:bg-opacity-80 transition-all"
+              >
                 <Facebook size={18} />
               </a>
-              <a href="#" className="w-8 h-8 bg-primary rounded flex items-center justify-center hover:bg-opacity-80 transition-all">
-                <Twitter size={18} />
+              <a
+                href="mailto:mbs.metalconstruction@gmail.com"
+                aria-label="Email"
+                className="w-8 h-8 bg-primary rounded flex items-center justify-center hover:bg-opacity-80 transition-all"
+              >
+                <Mail size={18} />
               </a>
-              <a href="#" className="w-8 h-8 bg-primary rounded flex items-center justify-center hover:bg-opacity-80 transition-all">
-                <Linkedin size={18} />
-              </a>
-              <a href="#" className="w-8 h-8 bg-primary rounded flex items-center justify-center hover:bg-opacity-80 transition-all">
-                <Instagram size={18} />
+              <a
+                href="https://wa.me/21652448549"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="WhatsApp"
+                className="w-8 h-8 bg-primary rounded flex items-center justify-center hover:bg-opacity-80 transition-all"
+              >
+                <Phone size={18} />
               </a>
             </div>
           </div>

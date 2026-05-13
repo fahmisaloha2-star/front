@@ -56,13 +56,9 @@ export function HomePage() {
 
   return (
     <div className="min-h-screen">
-      <section className="relative h-screen flex items-center justify-center bg-gradient-to-br from-secondary via-[#1a1a1a] to-secondary overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=1920')] bg-cover bg-center opacity-20"></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-secondary/50 to-secondary"></div>
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-20 left-1/4 w-96 h-96 bg-primary rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-primary rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1.5s' }}></div>
-        </div>
+      <section className="relative h-screen flex items-center justify-center bg-secondary overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/cover.svg')] bg-cover bg-center"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-secondary/30 via-transparent to-secondary/80"></div>
 
         <motion.div
           initial={{ opacity: 0, y: 30 }}
