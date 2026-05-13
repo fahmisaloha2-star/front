@@ -16,23 +16,23 @@ const columns: Column<Project>[] = [
         <div className="w-12 h-12 bg-gray-100 rounded" />
       ),
   },
-  { key: "title", label: "Title" },
-  { key: "location", label: "Location" },
-  { key: "year", label: "Year" },
+  { key: "title", label: "Titre" },
+  { key: "location", label: "Lieu" },
+  { key: "year", label: "Année" },
 ];
 
 const fields: Field[] = [
-  { name: "title", label: "Title", required: true },
+  { name: "title", label: "Titre", required: true },
   { name: "description", label: "Description", type: "textarea" },
-  { name: "location", label: "Location" },
-  { name: "year", label: "Year", type: "number" },
-  { name: "cover_url", label: "Cover image", type: "image", uploadEndpoint: "/api/projects/upload" },
+  { name: "location", label: "Lieu" },
+  { name: "year", label: "Année", type: "number" },
+  { name: "cover_url", label: "Image de couverture", type: "image", uploadEndpoint: "/api/projects/upload" },
 ];
 
 export default function AdminProjectsPage() {
   return (
     <CrudTable<Project>
-      title="Projects"
+      title="Projets"
       resource="projects"
       listKey="items"
       itemKey="project"

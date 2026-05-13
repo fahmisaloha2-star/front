@@ -49,12 +49,26 @@ export const api = {
 
 export type Product = {
   id: string;
+  code: string | null;
   name: string;
   description: string | null;
   price: number;
   stock: number;
   image_url: string | null;
   category: string | null;
+  unite: string | null;
+  tva: number;
+  prix_gros_ht: number;
+  prix_gros_ttc: number;
+  prix_achat_ttc: number;
+  remise: number;
+  etat: "Actif" | "Inactif";
+  fournisseur: string | null;
+  code_fournisseur: string | null;
+  famille: string | null;
+  marge_gros: number;
+  magasin: string | null;
+  promotion: boolean;
   created_at: string;
 };
 export type Project = {
@@ -123,6 +137,26 @@ export type Order = {
   delivery_fee: number;
   total: number;
   status: "pending" | "confirmed" | "shipped" | "delivered" | "cancelled";
+  created_at: string;
+};
+export type Supplier = {
+  id: string;
+  code: number;
+  nom_raison_sociale: string;
+  telephone: string | null;
+  adresse: string | null;
+  region: string | null;
+  responsable: string | null;
+  identifiant_fiscal: string | null;
+  solde: number;
+  exo: boolean;
+  tim: boolean;
+  fod: boolean;
+  bloc: boolean;
+  categorie: string | null;
+  compte_commercial: string | null;
+  compte_comptable: string | null;
+  delai_paiement: string | null;
   created_at: string;
 };
 export type PublicSettings = {

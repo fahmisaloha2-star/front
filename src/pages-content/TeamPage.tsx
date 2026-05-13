@@ -30,10 +30,10 @@ export function TeamPage() {
             className="text-center"
           >
             <h1 className="text-5xl md:text-6xl mb-4">
-              Meet our <span className="text-primary">Team</span>
+              Notre <span className="text-primary">Équipe</span>
             </h1>
             <p className="text-gray-300 max-w-2xl mx-auto">
-              Engineers, welders and project managers who deliver excellence on every project.
+              Ingénieurs, soudeurs et chefs de projet qui livrent l&apos;excellence sur chaque chantier.
             </p>
           </motion.div>
         </div>
@@ -46,7 +46,7 @@ export function TeamPage() {
               <Loader2 className="animate-spin text-primary" size={40} />
             </div>
           ) : items.length === 0 ? (
-            <p className="text-center text-gray-500 py-20">No team members yet.</p>
+            <p className="text-center text-gray-500 py-20">Aucun membre d&apos;équipe pour le moment.</p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {items.map((m, i) => (
@@ -90,7 +90,7 @@ export function TeamPage() {
                         <a
                           href={`tel:${m.phone}`}
                           className="hover:text-primary"
-                          aria-label="Phone"
+                          aria-label="Téléphone"
                         >
                           <Phone size={16} />
                         </a>

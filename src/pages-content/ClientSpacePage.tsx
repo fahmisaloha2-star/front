@@ -1,27 +1,29 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
+import Link from "next/link";
 import {
-  FolderOpen,
-  FileText,
-  Calendar,
-  Bell,
-  Download,
-  LogOut,
-  Shield,
-  Save,
+  ShoppingBag,
   Loader2,
+  Save,
   Mail,
   Phone,
   MapPin,
   User as UserIcon,
+  Package,
+  Clock,
+  CheckCircle2,
+  Truck,
+  XCircle,
+  Download,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
-import { api } from "@/lib/api-client";
+import { api, type Order, type PublicSettings } from "@/lib/api-client";
 import { ImageDrop } from "@/components/ImageDrop";
+import { ClientGuard } from "@/components/client/ClientGuard";
+import { ClientShell, type ClientSection } from "@/components/client/ClientShell";
 
 type ProfileRecord = {
   user_id: string;
@@ -33,17 +35,25 @@ type ProfileRecord = {
 };
 
 export function ClientSpacePage() {
-  const { user, loading, isAdmin, signOut } = useAuth();
-  const router = useRouter();
+  return (
+    <ClientGuard>
+      <ClientSpaceInner />
+    </ClientGuard>
+  );
+}
 
+function ClientSpaceInner() {
+  const { user } = useAuth();
+
+  const [section, setSection] = useState<ClientSection>("dashboard");
   const [profile, setProfile] = useState<ProfileRecord | null>(null);
   const [profileLoading, setProfileLoading] = useState(true);
   const [form, setForm] = useState({ full_name: "", phone: "", address: "", avatar_url: "" });
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
-    if (!loading && !user) router.push("/auth?redirect=/client");
-  }, [user, loading, router]);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [ordersLoading, setOrdersLoading] = useState(true);
+  const [settings, setSettings] = useState<PublicSettings>({});
 
   useEffect(() => {
     if (!user) return;
@@ -67,6 +77,24 @@ export function ClientSpacePage() {
     })();
   }, [user]);
 
+  useEffect(() => {
+    if (!user) return;
+    (async () => {
+      try {
+        const d = await api.get<{ items: Order[] }>("/api/orders/mine", true);
+        setOrders(d.items || []);
+      } catch (e) {
+        toast.error((e as Error).message);
+      } finally {
+        setOrdersLoading(false);
+      }
+    })();
+    api
+      .get<{ settings: PublicSettings }>("/api/settings/public")
+      .then((d) => setSettings(d.settings))
+      .catch(() => setSettings({}));
+  }, [user]);
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
@@ -77,7 +105,7 @@ export function ClientSpacePage() {
       }
       const d = await api.put<{ profile: ProfileRecord }>("/api/profile", patch);
       setProfile(d.profile);
-      toast.success("Profile saved");
+      toast.success("Profil enregistré");
     } catch (e) {
       toast.error((e as Error).message);
     } finally {
@@ -85,217 +113,338 @@ export function ClientSpacePage() {
     }
   };
 
-  if (loading || !user) {
+  const displayName =
+    profile?.full_name ||
+    (user?.user_metadata?.full_name as string) ||
+    user?.email?.split("@")[0] ||
+    "client";
+
+  const currency = settings.currency || "DT";
+
+  return (
+    <ClientShell
+      section={section}
+      onSectionChange={setSection}
+      displayName={displayName}
+      avatarUrl={form.avatar_url || profile?.avatar_url}
+      email={user?.email}
+    >
+      <div>
+        {section === "dashboard" && (
+          <DashboardSection
+            displayName={displayName}
+            orders={orders}
+            ordersLoading={ordersLoading}
+            currency={currency}
+          />
+        )}
+        {section === "profile" && (
+          <ProfileSection
+            email={user?.email || ""}
+            profile={profile}
+            form={form}
+            setForm={setForm}
+            saving={saving}
+            loading={profileLoading}
+            onSave={handleSave}
+            onAvatarChange={async (url) => {
+              setForm((f) => ({ ...f, avatar_url: url || "" }));
+              if (url) {
+                try {
+                  const d = await api.put<{ profile: ProfileRecord }>("/api/profile", {
+                    avatar_url: url,
+                  });
+                  setProfile(d.profile);
+                  toast.success("Avatar mis à jour");
+                } catch (err) {
+                  toast.error((err as Error).message);
+                }
+              }
+            }}
+          />
+        )}
+        {section === "orders" && (
+          <OrdersSection orders={orders} loading={ordersLoading} currency={currency} />
+        )}
+      </div>
+    </ClientShell>
+  );
+}
+
+function SectionHeader({ title, subtitle }: { title: string; subtitle?: string }) {
+  return (
+    <div className="mb-6">
+      <h1 className="text-3xl font-bold text-secondary">{title}</h1>
+      {subtitle && <p className="text-gray-600 mt-1">{subtitle}</p>}
+    </div>
+  );
+}
+
+function DashboardSection({
+  displayName,
+  orders,
+  ordersLoading,
+  currency,
+}: {
+  displayName: string;
+  orders: Order[];
+  ordersLoading: boolean;
+  currency: string;
+}) {
+  const totalSpent = orders.reduce((sum, o) => sum + Number(o.total || 0), 0);
+  const pending = orders.filter((o) => o.status === "pending").length;
+  const delivered = orders.filter((o) => o.status === "delivered").length;
+
+  return (
+    <div>
+      <SectionHeader
+        title={`Bon retour, ${displayName}`}
+        subtitle="Aperçu de votre compte"
+      />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {[
+          {
+            icon: ShoppingBag,
+            label: "Total commandes",
+            value: ordersLoading ? "…" : String(orders.length),
+            color: "bg-primary",
+          },
+          {
+            icon: Clock,
+            label: "En attente",
+            value: ordersLoading ? "…" : String(pending),
+            color: "bg-amber-500",
+          },
+          {
+            icon: CheckCircle2,
+            label: "Livrées",
+            value: ordersLoading ? "…" : String(delivered),
+            color: "bg-green-500",
+          },
+        ].map((s, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.1 }}
+            className="bg-white p-6 rounded-lg shadow"
+          >
+            <div
+              className={`w-12 h-12 ${s.color} rounded-lg flex items-center justify-center mb-4`}
+            >
+              <s.icon className="text-white" size={24} />
+            </div>
+            <div className="text-3xl text-secondary mb-1">{s.value}</div>
+            <div className="text-gray-600">{s.label}</div>
+          </motion.div>
+        ))}
+      </div>
+      {!ordersLoading && orders.length > 0 && (
+        <div className="mt-6 bg-white p-6 rounded-lg shadow">
+          <div className="text-sm text-gray-600">Total dépensé</div>
+          <div className="text-2xl font-bold text-primary">
+            {totalSpent.toFixed(2)} {currency}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ProfileSection({
+  email,
+  profile,
+  form,
+  setForm,
+  saving,
+  loading,
+  onSave,
+  onAvatarChange,
+}: {
+  email: string;
+  profile: ProfileRecord | null;
+  form: { full_name: string; phone: string; address: string; avatar_url: string };
+  setForm: React.Dispatch<
+    React.SetStateAction<{ full_name: string; phone: string; address: string; avatar_url: string }>
+  >;
+  saving: boolean;
+  loading: boolean;
+  onSave: (e: React.FormEvent) => void;
+  onAvatarChange: (url: string | null) => void;
+}) {
+  return (
+    <div>
+      <SectionHeader title="Mon profil" subtitle="Gérez vos informations personnelles" />
+      {loading ? (
+        <div className="bg-white rounded-lg shadow p-8 flex justify-center">
+          <Loader2 className="animate-spin text-primary" />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-white rounded-lg shadow p-6">
+            <h3 className="text-sm font-semibold text-secondary mb-3">Avatar</h3>
+            <ImageDrop
+              value={form.avatar_url || profile?.avatar_url || null}
+              onChange={onAvatarChange}
+              endpoint="/api/profile/avatar"
+              shape="circle"
+              height={200}
+            />
+          </div>
+
+          <form
+            onSubmit={onSave}
+            className="md:col-span-2 bg-white rounded-lg shadow p-6 space-y-4"
+          >
+            <Field
+              icon={<UserIcon size={16} />}
+              label="Nom complet"
+              value={form.full_name}
+              onChange={(v) => setForm({ ...form, full_name: v })}
+            />
+            <Field icon={<Mail size={16} />} label="Email" value={email} disabled />
+            <Field
+              icon={<Phone size={16} />}
+              label="Téléphone"
+              value={form.phone}
+              onChange={(v) => setForm({ ...form, phone: v })}
+            />
+            <Field
+              icon={<MapPin size={16} />}
+              label="Adresse"
+              value={form.address}
+              onChange={(v) => setForm({ ...form, address: v })}
+              textarea
+            />
+            <button
+              type="submit"
+              disabled={saving}
+              className="bg-primary text-white px-5 py-2.5 rounded-lg hover:brightness-110 flex items-center gap-2 disabled:opacity-60"
+            >
+              {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+              Enregistrer
+            </button>
+          </form>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function OrdersSection({
+  orders,
+  loading,
+  currency,
+}: {
+  orders: Order[];
+  loading: boolean;
+  currency: string;
+}) {
+  if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-secondary">
-        <div className="text-white/60">Loading…</div>
+      <div className="bg-white rounded-lg shadow p-8 flex justify-center">
+        <Loader2 className="animate-spin text-primary" />
       </div>
     );
   }
 
-  const name =
-    profile?.full_name ||
-    (user.user_metadata?.full_name as string) ||
-    user.email?.split("@")[0] ||
-    "client";
+  if (orders.length === 0) {
+    return (
+      <div>
+        <SectionHeader title="Mes commandes" />
+        <div className="bg-white rounded-lg shadow p-10 text-center">
+          <Package size={40} className="mx-auto text-gray-400 mb-3" />
+          <p className="text-gray-600 mb-5">Vous n&apos;avez encore passé aucune commande.</p>
+          <Link
+            href="/shop"
+            className="inline-flex bg-primary text-white px-6 py-2.5 rounded-lg hover:brightness-110"
+          >
+            Parcourir la boutique
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen pt-20 bg-gray-50">
-      <section className="bg-secondary text-white py-12 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(255,107,0,0.18),transparent_50%)]" />
-        <div className="container mx-auto px-4 relative">
-          <div className="flex flex-wrap gap-4 justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold mb-1">Welcome back, {name}</h1>
-              <p className="text-gray-300">Here&apos;s an overview of your projects</p>
-            </div>
-            <div className="flex gap-3">
-              {isAdmin && (
-                <button
-                  onClick={() => router.push("/admin")}
-                  className="bg-white/10 border border-white/20 px-4 py-2 rounded-lg hover:bg-white/20 transition flex items-center gap-2"
-                >
-                  <Shield size={16} /> Admin
-                </button>
-              )}
-              <button
-                onClick={async () => {
-                  await signOut();
-                  router.push("/");
-                }}
-                className="bg-primary px-5 py-2 rounded-lg hover:brightness-110 transition flex items-center gap-2"
-              >
-                <LogOut size={16} /> Sign out
-              </button>
-            </div>
-          </div>
+    <div>
+      <SectionHeader title="Mes commandes" subtitle={`${orders.length} commande(s) dans votre historique`} />
+      <div className="space-y-4">
+        {orders.map((order) => (
+          <OrderCard key={order.id} order={order} currency={currency} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function OrderCard({ order, currency }: { order: Order; currency: string }) {
+  const date = new Date(order.created_at).toLocaleDateString();
+  const invoiceReady = ["confirmed", "shipped", "delivered"].includes(order.status);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="bg-white rounded-lg shadow p-5"
+    >
+      <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
+        <div>
+          <div className="text-xs text-gray-500 font-mono">#{order.id.slice(0, 8)}</div>
+          <div className="text-sm text-gray-600">{date}</div>
         </div>
-      </section>
-
-      {/* ----- Profile section ----- */}
-      <section className="py-8">
-        <div className="container mx-auto px-4">
-          <h2 className="text-2xl text-secondary mb-4">My profile</h2>
-          {profileLoading ? (
-            <div className="bg-white rounded-lg shadow p-8 flex justify-center">
-              <Loader2 className="animate-spin text-primary" />
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white rounded-lg shadow p-6">
-                <h3 className="text-sm font-semibold text-secondary mb-3">Avatar</h3>
-                <ImageDrop
-                  value={form.avatar_url || profile?.avatar_url || null}
-                  onChange={async (url) => {
-                    setForm((f) => ({ ...f, avatar_url: url || "" }));
-                    if (url) {
-                      try {
-                        const d = await api.put<{ profile: ProfileRecord }>("/api/profile", {
-                          avatar_url: url,
-                        });
-                        setProfile(d.profile);
-                        toast.success("Avatar updated");
-                      } catch (err) {
-                        toast.error((err as Error).message);
-                      }
-                    }
-                  }}
-                  endpoint="/api/profile/avatar"
-                  shape="circle"
-                  height={200}
-                />
-              </div>
-
-              <form
-                onSubmit={handleSave}
-                className="md:col-span-2 bg-white rounded-lg shadow p-6 space-y-4"
-              >
-                <Field
-                  icon={<UserIcon size={16} />}
-                  label="Full name"
-                  value={form.full_name}
-                  onChange={(v) => setForm({ ...form, full_name: v })}
-                />
-                <Field
-                  icon={<Mail size={16} />}
-                  label="Email"
-                  value={user.email || ""}
-                  disabled
-                />
-                <Field
-                  icon={<Phone size={16} />}
-                  label="Phone"
-                  value={form.phone}
-                  onChange={(v) => setForm({ ...form, phone: v })}
-                />
-                <Field
-                  icon={<MapPin size={16} />}
-                  label="Address"
-                  value={form.address}
-                  onChange={(v) => setForm({ ...form, address: v })}
-                  textarea
-                />
-                <button
-                  type="submit"
-                  disabled={saving}
-                  className="bg-primary text-white px-5 py-2.5 rounded-lg hover:brightness-110 flex items-center gap-2 disabled:opacity-60"
-                >
-                  {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-                  Save changes
-                </button>
-              </form>
-            </div>
+        <div className="flex items-center gap-3">
+          <StatusBadge status={order.status} />
+          {invoiceReady && (
+            <Link
+              href={`/client/orders/${order.id}/facture`}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Télécharger la facture (PDF)"
+              className="inline-flex items-center gap-1.5 text-primary hover:bg-primary/10 px-3 py-1.5 rounded-md transition-colors text-sm font-medium"
+            >
+              <Download size={16} /> Facture
+            </Link>
           )}
         </div>
-      </section>
-
-      {/* ----- Stats + projects + documents (placeholder mock until DB models exist) ----- */}
-      <section className="py-8">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            {[
-              { icon: FolderOpen, label: "Active Projects", value: "3", color: "bg-blue-500" },
-              { icon: FileText, label: "Documents", value: "24", color: "bg-green-500" },
-              { icon: Calendar, label: "Appointments", value: "2", color: "bg-purple-500" },
-              { icon: Bell, label: "Notifications", value: "5", color: "bg-primary" },
-            ].map((s, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                className="bg-white p-6 rounded-lg shadow"
-              >
-                <div
-                  className={`w-12 h-12 ${s.color} rounded-lg flex items-center justify-center mb-4`}
-                >
-                  <s.icon className="text-white" size={24} />
-                </div>
-                <div className="text-3xl text-secondary mb-1">{s.value}</div>
-                <div className="text-gray-600">{s.label}</div>
-              </motion.div>
-            ))}
+      </div>
+      <div className="space-y-2 border-t border-gray-100 pt-3">
+        {order.items.map((it, i) => (
+          <div key={i} className="flex justify-between text-sm">
+            <span className="text-gray-700">
+              {it.name} <span className="text-gray-400">× {it.qty}</span>
+            </span>
+            <span className="text-gray-600">
+              {Number(it.line_total).toFixed(2)} {currency}
+            </span>
           </div>
+        ))}
+      </div>
+      <div className="flex justify-between items-baseline border-t border-gray-100 pt-3 mt-3">
+        <span className="text-sm text-gray-600">Total</span>
+        <span className="text-lg font-bold text-primary">
+          {Number(order.total).toFixed(2)} {currency}
+        </span>
+      </div>
+    </motion.div>
+  );
+}
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-2xl text-secondary mb-6">Active Projects</h2>
-              <div className="space-y-4">
-                {[
-                  { name: "Warehouse Expansion", status: "In Progress", progress: 65 },
-                  { name: "Steel Frame Installation", status: "Planning", progress: 30 },
-                  { name: "Metal Roof Replacement", status: "Nearing Completion", progress: 90 },
-                ].map((p, i) => (
-                  <div key={i} className="border border-gray-200 rounded-lg p-4">
-                    <div className="flex justify-between items-start mb-3">
-                      <div>
-                        <h3 className="text-lg text-secondary">{p.name}</h3>
-                        <p className="text-sm text-gray-500">{p.status}</p>
-                      </div>
-                      <span className="text-sm text-gray-600">{p.progress}%</span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div
-                        className="bg-primary h-2 rounded-full"
-                        style={{ width: `${p.progress}%` }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-2xl text-secondary mb-6">Recent Documents</h2>
-              <div className="space-y-3">
-                {[
-                  { name: "Project_Blueprint_Final.pdf", date: "2026-05-10", size: "2.4 MB" },
-                  { name: "Invoice_MAY2026.pdf", date: "2026-05-08", size: "156 KB" },
-                  { name: "Safety_Inspection_Report.pdf", date: "2026-05-05", size: "890 KB" },
-                  { name: "Contract_Amendment.pdf", date: "2026-05-01", size: "345 KB" },
-                ].map((d, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition cursor-pointer"
-                  >
-                    <div className="flex items-center gap-3">
-                      <FileText className="text-primary" size={24} />
-                      <div>
-                        <div className="text-secondary">{d.name}</div>
-                        <div className="text-sm text-gray-600">
-                          {d.date} • {d.size}
-                        </div>
-                      </div>
-                    </div>
-                    <Download className="text-gray-400 hover:text-primary" size={20} />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
+function StatusBadge({ status }: { status: Order["status"] }) {
+  const map: Record<Order["status"], { label: string; cls: string; Icon: typeof Clock }> = {
+    pending: { label: "En attente", cls: "bg-amber-100 text-amber-700", Icon: Clock },
+    confirmed: { label: "Confirmée", cls: "bg-blue-100 text-blue-700", Icon: CheckCircle2 },
+    shipped: { label: "Expédiée", cls: "bg-purple-100 text-purple-700", Icon: Truck },
+    delivered: { label: "Livrée", cls: "bg-green-100 text-green-700", Icon: CheckCircle2 },
+    cancelled: { label: "Annulée", cls: "bg-red-100 text-red-700", Icon: XCircle },
+  };
+  const m = map[status];
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${m.cls}`}
+    >
+      <m.Icon size={12} /> {m.label}
+    </span>
   );
 }
 

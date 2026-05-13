@@ -6,9 +6,9 @@ import { Briefcase, Tag, Megaphone, Calendar, Loader2 } from "lucide-react";
 import { api, type Announcement } from "@/lib/api-client";
 
 const typeMeta = {
-  job: { label: "Jobs", icon: Briefcase, color: "bg-blue-500" },
+  job: { label: "Emplois", icon: Briefcase, color: "bg-blue-500" },
   promotion: { label: "Promotions", icon: Tag, color: "bg-primary" },
-  news: { label: "News", icon: Megaphone, color: "bg-green-500" },
+  news: { label: "Actualités", icon: Megaphone, color: "bg-green-500" },
 } as const;
 
 const FILTERS = ["All", "job", "promotion", "news"] as const;
@@ -44,10 +44,10 @@ export function NewsPage() {
             className="text-center"
           >
             <h1 className="text-5xl md:text-6xl mb-4">
-              News & <span className="text-primary">Announcements</span>
+              Actualités &amp; <span className="text-primary">Annonces</span>
             </h1>
             <p className="text-gray-300 max-w-2xl mx-auto">
-              Latest updates, open positions and promotions from MIS Metal Construction.
+              Dernières mises à jour, offres d&apos;emploi et promotions de MIS Metal Construction.
             </p>
           </motion.div>
         </div>
@@ -65,7 +65,7 @@ export function NewsPage() {
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }`}
             >
-              {f === "All" ? "All" : typeMeta[f as keyof typeof typeMeta].label}
+              {f === "All" ? "Tout" : typeMeta[f as keyof typeof typeMeta].label}
             </button>
           ))}
         </div>
@@ -78,7 +78,7 @@ export function NewsPage() {
               <Loader2 className="animate-spin text-primary" size={40} />
             </div>
           ) : filtered.length === 0 ? (
-            <p className="text-center text-gray-500 py-20">No announcements yet.</p>
+            <p className="text-center text-gray-500 py-20">Aucune annonce pour le moment.</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filtered.map((a, i) => {

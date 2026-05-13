@@ -4,7 +4,7 @@ import { CrudTable, type Column, type Field } from "@/components/admin/CrudTable
 import type { Category } from "@/lib/api-client";
 
 const columns: Column<Category>[] = [
-  { key: "name", label: "Name" },
+  { key: "name", label: "Nom" },
   { key: "slug", label: "Slug" },
   {
     key: "description",
@@ -16,15 +16,15 @@ const columns: Column<Category>[] = [
 ];
 
 const fields: Field[] = [
-  { name: "name", label: "Name", required: true },
-  { name: "slug", label: "Slug (auto-generated if empty)" },
+  { name: "name", label: "Nom", required: true },
+  { name: "slug", label: "Slug (auto-généré si vide)" },
   { name: "description", label: "Description", type: "textarea" },
 ];
 
 export default function AdminCategoriesPage() {
   return (
     <CrudTable<Category>
-      title="Categories"
+      title="Catégories"
       resource="categories"
       listKey="items"
       itemKey="category"

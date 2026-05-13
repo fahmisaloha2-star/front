@@ -18,15 +18,15 @@ type UiProject = {
 const mapProject = (p: ApiProject): UiProject => ({
   id: p.id,
   title: p.title,
-  category: 'All',
-  image: p.cover_url || 'https://placehold.co/800x500?text=No+image',
+  category: 'Tous',
+  image: p.cover_url || 'https://placehold.co/800x500?text=Aucune+image',
   location: p.location || '—',
-  date: p.year ? String(p.year) : new Date(p.created_at).toLocaleDateString(undefined, { month: 'long', year: 'numeric' }),
+  date: p.year ? String(p.year) : new Date(p.created_at).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }),
   description: p.description || '',
 });
 
 export function ProjectsPage() {
-  const [activeCategory, setActiveCategory] = useState('All');
+  const [activeCategory, setActiveCategory] = useState('Tous');
   const [selectedProject, setSelectedProject] = useState<UiProject | null>(null);
   const [projects, setProjects] = useState<UiProject[]>([]);
   const [loading, setLoading] = useState(true);
@@ -38,10 +38,10 @@ export function ProjectsPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const categories = ['All'];
+  const categories = ['Tous'];
 
 
-  const filteredProjects = activeCategory === 'All'
+  const filteredProjects = activeCategory === 'Tous'
     ? projects
     : projects.filter(p => p.category === activeCategory);
 
@@ -65,7 +65,7 @@ export function ProjectsPage() {
               transition={{ delay: 0.2 }}
               className="text-5xl md:text-6xl mb-6"
             >
-              Our <span className="text-primary">Projects</span>
+              Nos <span className="text-primary">Projets</span>
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -73,7 +73,7 @@ export function ProjectsPage() {
               transition={{ delay: 0.4 }}
               className="text-xl text-gray-300 max-w-3xl mx-auto"
             >
-              Showcasing excellence in metal construction across diverse industries
+              L&apos;excellence en construction métallique au service de tous les secteurs
             </motion.p>
           </motion.div>
         </div>
@@ -124,7 +124,7 @@ export function ProjectsPage() {
                 </div>
               ) : filteredProjects.length === 0 ? (
                 <div className="text-center text-gray-500 py-20">
-                  No projects yet — check back soon.
+                  Aucun projet pour le moment — revenez bientôt.
                 </div>
               ) : (
               <div className="columns-1 gap-x-6 space-y-6 sm:columns-2 xl:columns-3">
@@ -252,9 +252,9 @@ export function ProjectsPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-4xl md:text-5xl mb-6">Ready to Discuss Your Project?</h2>
+            <h2 className="text-4xl md:text-5xl mb-6">Prêt à discuter de votre projet ?</h2>
             <p className="text-xl mb-8 max-w-2xl mx-auto">
-              Let's bring your vision to life with our expert metal construction services
+              Donnons vie à votre vision avec nos services experts en construction métallique
             </p>
             <motion.a
               href="/contact"
@@ -262,7 +262,7 @@ export function ProjectsPage() {
               whileTap={{ scale: 0.95 }}
               className="inline-block bg-white text-primary px-8 py-4 rounded-lg hover:bg-gray-100 transition-all"
             >
-              Start Your Project
+              Démarrer mon projet
             </motion.a>
           </motion.div>
         </div>

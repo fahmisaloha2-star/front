@@ -14,19 +14,21 @@ import {
   Settings,
   LogOut,
   Home,
+  Truck,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 const nav = [
-  { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
-  { href: "/admin/products", label: "Products", icon: Package },
-  { href: "/admin/categories", label: "Categories", icon: Tags },
+  { href: "/admin", label: "Tableau de bord", icon: LayoutDashboard, exact: true },
+  { href: "/admin/products", label: "Produits", icon: Package },
+  { href: "/admin/categories", label: "Catégories", icon: Tags },
+  { href: "/admin/suppliers", label: "Fournisseurs", icon: Truck },
   { href: "/admin/services", label: "Services", icon: Wrench },
-  { href: "/admin/projects", label: "Projects", icon: Building2 },
-  { href: "/admin/employers", label: "Team", icon: Users },
-  { href: "/admin/announcements", label: "Announcements", icon: Megaphone },
-  { href: "/admin/orders", label: "Orders", icon: ShoppingBag },
-  { href: "/admin/settings", label: "Settings", icon: Settings },
+  { href: "/admin/projects", label: "Projets", icon: Building2 },
+  { href: "/admin/employers", label: "Équipe", icon: Users },
+  { href: "/admin/announcements", label: "Annonces", icon: Megaphone },
+  { href: "/admin/orders", label: "Commandes", icon: ShoppingBag },
+  { href: "/admin/settings", label: "Paramètres", icon: Settings },
 ];
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
@@ -38,13 +40,16 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen flex bg-gray-50">
       <aside className="w-64 bg-secondary text-white flex flex-col">
         <div className="px-6 py-6 border-b border-white/10">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-primary rounded flex items-center justify-center font-bold">
-              MIS
-            </div>
-            <div>
-              <div className="font-bold">MIS Admin</div>
-              <div className="text-xs text-white/60">{user?.email}</div>
+          <Link href="/" className="flex items-center gap-3">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/logo.png"
+              alt="MIS"
+              className="h-10 w-auto object-contain bg-white/95 rounded p-1 shrink-0"
+            />
+            <div className="min-w-0">
+              <div className="font-bold">Admin</div>
+              <div className="text-xs text-white/60 truncate">{user?.email}</div>
             </div>
           </Link>
         </div>
@@ -74,7 +79,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             href="/"
             className="flex items-center gap-3 px-3 py-2 text-white/70 hover:text-white rounded-lg"
           >
-            <Home size={18} /> View site
+            <Home size={18} /> Voir le site
           </Link>
           <button
             onClick={async () => {
@@ -83,7 +88,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             }}
             className="w-full flex items-center gap-3 px-3 py-2 text-white/70 hover:text-white rounded-lg"
           >
-            <LogOut size={18} /> Sign out
+            <LogOut size={18} /> Déconnexion
           </button>
         </div>
       </aside>

@@ -16,6 +16,7 @@ export function Providers({ children }: { children: ReactNode }) {
   const [queryClient] = useState(() => new QueryClient());
   const pathname = usePathname();
   const chromeless = pathname === "/auth" || pathname?.startsWith("/admin") || false;
+  const skipTransition = pathname?.startsWith("/admin") ?? false;
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -26,7 +27,7 @@ export function Providers({ children }: { children: ReactNode }) {
             <CursorGlow />
             {!chromeless && <Navbar />}
             <main className="flex-1">
-              <PageTransition>{children}</PageTransition>
+              {skipTransition ? children : <PageTransition>{children}</PageTransition>}
             </main>
             {!chromeless && <Footer />}
           </div>

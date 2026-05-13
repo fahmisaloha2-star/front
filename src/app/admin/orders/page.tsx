@@ -1,11 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Loader2, Trash2, ChevronDown, ChevronRight } from "lucide-react";
+import { Fragment, useEffect, useState } from "react";
+import Link from "next/link";
+import { Loader2, Trash2, ChevronDown, ChevronRight, Download } from "lucide-react";
 import { toast } from "sonner";
 import { api, type Order } from "@/lib/api-client";
 
 const STATUSES = ["pending", "confirmed", "shipped", "delivered", "cancelled"] as const;
+const STATUS_LABELS: Record<string, string> = {
+  pending: "En attente",
+  confirmed: "Confirmée",
+  shipped: "Expédiée",
+  delivered: "Livrée",
+  cancelled: "Annulée",
+};
 const STATUS_COLORS: Record<string, string> = {
   pending: "bg-yellow-100 text-yellow-800",
   confirmed: "bg-blue-100 text-blue-800",
@@ -39,18 +47,18 @@ export default function AdminOrdersPage() {
     try {
       const data = await api.put<{ order: Order }>(`/api/orders/${id}`, { status });
       setOrders((o) => o.map((r) => (r.id === id ? data.order : r)));
-      toast.success("Status updated");
+      toast.success("Statut mis à jour");
     } catch (e) {
       toast.error((e as Error).message);
     }
   };
 
   const remove = async (id: string) => {
-    if (!confirm("Delete this order?")) return;
+    if (!confirm("Supprimer cette commande ?")) return;
     try {
       await api.delete(`/api/orders/${id}`);
       setOrders((o) => o.filter((r) => r.id !== id));
-      toast.success("Deleted");
+      toast.success("Supprimée");
     } catch (e) {
       toast.error((e as Error).message);
     }
@@ -62,9 +70,9 @@ export default function AdminOrdersPage() {
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-secondary">Orders</h1>
+          <h1 className="text-2xl font-bold text-secondary">Commandes</h1>
           <p className="text-sm text-gray-500 mt-1">
-            {orders.length} order(s) · Total revenue:{" "}
+            {orders.length} commande(s) · Chiffre d&apos;affaires :{" "}
             <span className="text-secondary font-medium">{totalSum.toFixed(2)} DT</span>
           </p>
         </div>
@@ -76,7 +84,7 @@ export default function AdminOrdersPage() {
             <Loader2 className="animate-spin text-primary" />
           </div>
         ) : orders.length === 0 ? (
-          <div className="p-12 text-center text-gray-500">No orders yet.</div>
+          <div className="p-12 text-center text-gray-500">Aucune commande pour le moment.</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -84,11 +92,11 @@ export default function AdminOrdersPage() {
                 <tr>
                   <th className="text-left px-4 py-3 font-medium w-8"></th>
                   <th className="text-left px-4 py-3 font-medium">Date</th>
-                  <th className="text-left px-4 py-3 font-medium">Customer</th>
-                  <th className="text-left px-4 py-3 font-medium">Phone</th>
-                  <th className="text-right px-4 py-3 font-medium">Items</th>
+                  <th className="text-left px-4 py-3 font-medium">Client</th>
+                  <th className="text-left px-4 py-3 font-medium">Téléphone</th>
+                  <th className="text-right px-4 py-3 font-medium">Articles</th>
                   <th className="text-right px-4 py-3 font-medium">Total</th>
-                  <th className="text-left px-4 py-3 font-medium">Status</th>
+                  <th className="text-left px-4 py-3 font-medium">Statut</th>
                   <th className="px-4 py-3"></th>
                 </tr>
               </thead>
@@ -96,13 +104,13 @@ export default function AdminOrdersPage() {
                 {orders.map((o) => {
                   const isOpen = expanded === o.id;
                   return (
-                    <>
-                      <tr key={o.id} className="hover:bg-gray-50">
+                    <Fragment key={o.id}>
+                      <tr className="hover:bg-gray-50">
                         <td className="px-4 py-3">
                           <button
                             onClick={() => setExpanded(isOpen ? null : o.id)}
                             className="text-gray-400 hover:text-primary"
-                            aria-label={isOpen ? "Collapse" : "Expand"}
+                            aria-label={isOpen ? "Réduire" : "Développer"}
                           >
                             {isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                           </button>
@@ -136,15 +144,26 @@ export default function AdminOrdersPage() {
                           >
                             {STATUSES.map((s) => (
                               <option key={s} value={s}>
-                                {s}
+                                {STATUS_LABELS[s] || s}
                               </option>
                             ))}
                           </select>
                         </td>
-                        <td className="px-4 py-3 text-right">
+                        <td className="px-4 py-3 text-right whitespace-nowrap">
+                          {["confirmed", "shipped", "delivered"].includes(o.status) && (
+                            <Link
+                              href={`/client/orders/${o.id}/facture`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              title="Télécharger la facture (PDF)"
+                              className="inline-flex text-gray-400 hover:text-primary mr-2 align-middle"
+                            >
+                              <Download size={16} />
+                            </Link>
+                          )}
                           <button
                             onClick={() => remove(o.id)}
-                            className="text-gray-400 hover:text-red-600"
+                            className="text-gray-400 hover:text-red-600 align-middle"
                           >
                             <Trash2 size={16} />
                           </button>
@@ -155,7 +174,7 @@ export default function AdminOrdersPage() {
                           <td colSpan={8} className="px-4 py-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
                               <div>
-                                <div className="text-gray-500 mb-1">Address</div>
+                                <div className="text-gray-500 mb-1">Adresse</div>
                                 <div className="text-secondary">
                                   {o.customer_address || "—"}
                                 </div>
@@ -169,7 +188,7 @@ export default function AdminOrdersPage() {
                                 )}
                               </div>
                               <div>
-                                <div className="text-gray-500 mb-2">Items</div>
+                                <div className="text-gray-500 mb-2">Articles</div>
                                 <ul className="space-y-1">
                                   {o.items.map((i, idx) => (
                                     <li
@@ -185,11 +204,11 @@ export default function AdminOrdersPage() {
                                 </ul>
                                 <div className="border-t border-gray-200 mt-2 pt-2 space-y-1">
                                   <div className="flex justify-between text-gray-600">
-                                    <span>Subtotal</span>
+                                    <span>Sous-total</span>
                                     <span>{Number(o.subtotal).toFixed(2)} DT</span>
                                   </div>
                                   <div className="flex justify-between text-gray-600">
-                                    <span>Delivery</span>
+                                    <span>Livraison</span>
                                     <span>{Number(o.delivery_fee).toFixed(2)} DT</span>
                                   </div>
                                   <div className="flex justify-between font-bold text-secondary">
@@ -202,7 +221,7 @@ export default function AdminOrdersPage() {
                           </td>
                         </tr>
                       )}
-                    </>
+                    </Fragment>
                   );
                 })}
               </tbody>

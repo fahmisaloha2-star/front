@@ -58,7 +58,7 @@ export function AboutPage() {
               transition={{ delay: 0.2 }}
               className="text-5xl md:text-6xl mb-6"
             >
-              About <span className="text-primary">MIS Metal</span> Construction
+              À propos de <span className="text-primary">MIS Metal</span> Construction
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -66,7 +66,7 @@ export function AboutPage() {
               transition={{ delay: 0.4 }}
               className="text-xl text-gray-300 max-w-3xl mx-auto"
             >
-              Leading the industry in metal construction and steel structures since 2005
+              Leader du secteur de la construction métallique et des structures en acier depuis 2005
             </motion.p>
           </motion.div>
         </div>
@@ -80,21 +80,21 @@ export function AboutPage() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-4xl text-secondary mb-6">Our Story</h2>
+              <h2 className="text-4xl text-secondary mb-6">Notre histoire</h2>
               <p className="text-gray-700 mb-4">
-                Founded in 2005, MIS Metal Construction has grown from a small fabrication shop to one
-                of the region's most trusted names in industrial metal construction. Our commitment to
-                quality, safety, and innovation has been the cornerstone of our success.
+                Fondée en 2005, MIS Metal Construction est passée d&apos;un petit atelier de fabrication à l&apos;un
+                des noms les plus fiables de la région en construction métallique industrielle. Notre engagement
+                envers la qualité, la sécurité et l&apos;innovation est la pierre angulaire de notre réussite.
               </p>
               <p className="text-gray-700 mb-4">
-                With a team of highly skilled engineers, welders, and project managers, we've completed
-                over 500 projects across various industries including manufacturing, logistics, energy,
-                and commercial construction.
+                Avec une équipe d&apos;ingénieurs, soudeurs et chefs de projet hautement qualifiés, nous avons
+                livré plus de 500 projets dans divers secteurs : industrie manufacturière, logistique, énergie
+                et construction commerciale.
               </p>
               <p className="text-gray-700">
-                Today, we continue to push the boundaries of what's possible in metal construction,
-                utilizing cutting-edge technology and sustainable practices to deliver exceptional
-                results for our clients.
+                Aujourd&apos;hui, nous continuons à repousser les limites du possible en construction métallique,
+                en utilisant des technologies de pointe et des pratiques durables pour livrer des résultats
+                exceptionnels à nos clients.
               </p>
             </motion.div>
 
@@ -122,7 +122,7 @@ export function AboutPage() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl text-secondary mb-4">Our Mission & Vision</h2>
+            <h2 className="text-4xl text-secondary mb-4">Notre mission &amp; notre vision</h2>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -133,10 +133,11 @@ export function AboutPage() {
               className="bg-white p-8 rounded-lg shadow-lg"
             >
               <Target className="w-12 h-12 text-primary mb-4" />
-              <h3 className="text-2xl text-secondary mb-4">Our Mission</h3>
+              <h3 className="text-2xl text-secondary mb-4">Notre mission</h3>
               <p className="text-gray-700">
-                To deliver superior metal construction solutions that exceed client expectations through
-                innovative design, expert craftsmanship, and unwavering commitment to safety and quality.
+                Livrer des solutions de construction métallique supérieures qui dépassent les attentes
+                des clients grâce à un design innovant, un savoir-faire expert et un engagement constant
+                envers la sécurité et la qualité.
               </p>
             </motion.div>
 
@@ -148,10 +149,11 @@ export function AboutPage() {
               className="bg-white p-8 rounded-lg shadow-lg"
             >
               <Eye className="w-12 h-12 text-primary mb-4" />
-              <h3 className="text-2xl text-secondary mb-4">Our Vision</h3>
+              <h3 className="text-2xl text-secondary mb-4">Notre vision</h3>
               <p className="text-gray-700">
-                To be the premier choice for metal construction projects worldwide, recognized for our
-                technical excellence, sustainable practices, and exceptional customer service.
+                Devenir le choix de référence pour les projets de construction métallique dans le monde,
+                reconnu pour notre excellence technique, nos pratiques durables et notre service client
+                exceptionnel.
               </p>
             </motion.div>
           </div>
@@ -166,15 +168,15 @@ export function AboutPage() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl mb-4">Our Values</h2>
+            <h2 className="text-4xl mb-4">Nos valeurs</h2>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {[
-              { title: 'Quality', desc: 'Excellence in every weld, every beam, every project' },
-              { title: 'Safety', desc: 'Uncompromising commitment to worker and site safety' },
-              { title: 'Innovation', desc: 'Embracing new technologies and methodologies' },
-              { title: 'Integrity', desc: 'Honest, transparent relationships with all stakeholders' },
+              { title: 'Qualité', desc: 'L\'excellence dans chaque soudure, chaque poutre, chaque projet' },
+              { title: 'Sécurité', desc: 'Engagement sans compromis envers la sécurité des équipes et des chantiers' },
+              { title: 'Innovation', desc: 'Adoption des nouvelles technologies et méthodes' },
+              { title: 'Intégrité', desc: 'Des relations honnêtes et transparentes avec toutes les parties' },
             ].map((value, index) => (
               <motion.div
                 key={index}
@@ -203,14 +205,14 @@ export function AboutPage() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl text-secondary mb-4">Our Leadership Team</h2>
+            <h2 className="text-4xl text-secondary mb-4">Notre équipe de direction</h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Experienced professionals dedicated to excellence
+              Des professionnels expérimentés dédiés à l&apos;excellence
             </p>
           </motion.div>
 
           {team.length === 0 ? (
-            <p className="text-center text-gray-400">Team loading…</p>
+            <p className="text-center text-gray-400">Chargement de l&apos;équipe…</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {team.slice(0, 3).map((member, index) => (
@@ -248,10 +250,10 @@ export function AboutPage() {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
             {[
-              { number: `${stats.projects}+`, label: 'Projects Completed' },
-              { number: `${stats.clients}+`, label: 'Happy Clients' },
-              { number: `${stats.team}+`, label: 'Team Members' },
-              { number: `${stats.years}+`, label: 'Years Experience' },
+              { number: `${stats.projects}+`, label: 'Projets réalisés' },
+              { number: `${stats.clients}+`, label: 'Clients satisfaits' },
+              { number: `${stats.team}+`, label: 'Membres de l\'équipe' },
+              { number: `${stats.years}+`, label: 'Années d\'expérience' },
             ].map((stat, index) => (
               <motion.div
                 key={index}

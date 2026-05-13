@@ -10,7 +10,7 @@ const typeColors: Record<string, string> = {
 };
 
 const columns: Column<Announcement>[] = [
-  { key: "title", label: "Title" },
+  { key: "title", label: "Titre" },
   {
     key: "type",
     label: "Type",
@@ -25,28 +25,28 @@ const columns: Column<Announcement>[] = [
   },
   {
     key: "published",
-    label: "Published",
+    label: "Publié",
     render: (r) => (r.published ? "✓" : "—"),
   },
   {
     key: "created_at",
-    label: "Created",
+    label: "Créé le",
     render: (r) => new Date(r.created_at).toLocaleDateString(),
   },
 ];
 
 const fields: Field[] = [
-  { name: "title", label: "Title", required: true },
-  { name: "body", label: "Body", type: "textarea" },
+  { name: "title", label: "Titre", required: true },
+  { name: "body", label: "Contenu", type: "textarea" },
   { name: "type", label: "Type", type: "select", options: ["job", "promotion", "news"] },
   { name: "image_url", label: "Image", type: "image", uploadEndpoint: "/api/announcements/upload" },
-  { name: "published", label: "Published", type: "boolean" },
+  { name: "published", label: "Publié", type: "boolean" },
 ];
 
 export default function AdminAnnouncementsPage() {
   return (
     <CrudTable<Announcement>
-      title="Announcements"
+      title="Annonces"
       resource="announcements"
       listKey="items"
       itemKey="announcement"

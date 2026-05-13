@@ -2,26 +2,35 @@
 
 import { motion } from 'motion/react';
 import Link from 'next/link';
-import { Users } from 'lucide-react';
+import { Briefcase, Tag, Megaphone, Calendar, ArrowRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { api, type Service } from '@/lib/api-client';
+import { api, type Service, type Announcement } from '@/lib/api-client';
 import { iconFor } from '@/lib/icon-map';
+
+const announcementMeta = {
+  job: { label: 'Emploi', icon: Briefcase, color: 'bg-blue-500' },
+  promotion: { label: 'Promotion', icon: Tag, color: 'bg-primary' },
+  news: { label: 'Actualité', icon: Megaphone, color: 'bg-green-500' },
+} as const;
 
 export function HomePage() {
   const [counts, setCounts] = useState({ projects: 0, clients: 0, experience: 0 });
   const [services, setServices] = useState<Service[]>([]);
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
 
   useEffect(() => {
     (async () => {
       try {
-        const [projectsRes, employersRes, servicesRes] = await Promise.all([
+        const [projectsRes, employersRes, servicesRes, announcementsRes] = await Promise.all([
           api.get<{ items: unknown[] }>('/api/projects'),
           api.get<{ items: unknown[] }>('/api/employers'),
           api.get<{ items: Service[] }>('/api/services'),
+          api.get<{ items: Announcement[] }>('/api/announcements'),
         ]);
         const targetProjects = projectsRes.items.length;
         const targetClients = employersRes.items.length * 50 || 100;
         setServices(servicesRes.items.slice(0, 6));
+        setAnnouncements(announcementsRes.items.filter((a) => a.published).slice(0, 3));
         animateCount(targetProjects, 'projects', 1500);
         animateCount(targetClients, 'clients', 1500);
         animateCount(20, 'experience', 1500);
@@ -67,9 +76,9 @@ export function HomePage() {
             transition={{ delay: 0.2, duration: 0.8 }}
             className="text-5xl md:text-7xl text-white mb-6"
           >
-            Building Excellence in
+            L&apos;excellence en
             <br />
-            <span className="text-primary">Metal Construction</span>
+            <span className="text-primary">construction métallique</span>
           </motion.h1>
 
           <motion.p
@@ -78,7 +87,7 @@ export function HomePage() {
             transition={{ delay: 0.4, duration: 0.8 }}
             className="text-xl text-gray-300 mb-12 max-w-2xl mx-auto"
           >
-            Premium steel structures and metal fabrication services for industrial and commercial projects
+            Structures en acier haut de gamme et services de fabrication métallique pour projets industriels et commerciaux
           </motion.p>
 
           <motion.div
@@ -91,13 +100,13 @@ export function HomePage() {
               href="/contact"
               className="bg-primary text-white px-8 py-4 rounded-lg hover:bg-opacity-90 transition-all transform hover:scale-105"
             >
-              Get a Quote
+              Demander un devis
             </Link>
             <Link
               href="/projects"
               className="bg-white text-secondary px-8 py-4 rounded-lg hover:bg-gray-100 transition-all transform hover:scale-105"
             >
-              View Projects
+              Voir les projets
             </Link>
           </motion.div>
         </motion.div>
@@ -119,21 +128,21 @@ export function HomePage() {
               className="text-center p-8 bg-gray-50 rounded-lg"
             >
               <div className="text-5xl text-primary mb-4">{counts.projects}+</div>
-              <h3 className="text-xl text-secondary">Completed Projects</h3>
+              <h3 className="text-xl text-secondary">Projets réalisés</h3>
             </motion.div>
             <motion.div
               whileHover={{ scale: 1.05 }}
               className="text-center p-8 bg-gray-50 rounded-lg"
             >
               <div className="text-5xl text-primary mb-4">{counts.clients}+</div>
-              <h3 className="text-xl text-secondary">Satisfied Clients</h3>
+              <h3 className="text-xl text-secondary">Clients satisfaits</h3>
             </motion.div>
             <motion.div
               whileHover={{ scale: 1.05 }}
               className="text-center p-8 bg-gray-50 rounded-lg"
             >
               <div className="text-5xl text-primary mb-4">{counts.experience}+</div>
-              <h3 className="text-xl text-secondary">Years of Excellence</h3>
+              <h3 className="text-xl text-secondary">Années d&apos;excellence</h3>
             </motion.div>
           </div>
         </div>
@@ -147,14 +156,14 @@ export function HomePage() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl md:text-5xl text-secondary mb-4">Our Services</h2>
+            <h2 className="text-4xl md:text-5xl text-secondary mb-4">Nos services</h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Comprehensive metal construction solutions tailored to your needs
+              Solutions complètes en construction métallique adaptées à vos besoins
             </p>
           </motion.div>
 
           {services.length === 0 ? (
-            <p className="text-center text-gray-400">Services loading…</p>
+            <p className="text-center text-gray-400">Chargement des services…</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {services.map((service, index) => {
@@ -188,18 +197,18 @@ export function HomePage() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-4xl md:text-5xl mb-6">Why Choose MIS Metal?</h2>
+              <h2 className="text-4xl md:text-5xl mb-6">Pourquoi choisir MIS Metal ?</h2>
               <p className="text-gray-300 mb-6">
-                With over 20 years of experience in metal construction, we deliver superior quality and
-                unmatched expertise in every project.
+                Avec plus de 20 ans d&apos;expérience en construction métallique, nous offrons une qualité supérieure et
+                une expertise inégalée sur chaque projet.
               </p>
               <ul className="space-y-4">
                 {[
-                  'ISO Certified Quality Standards',
-                  'Expert Engineering Team',
-                  '24/7 Project Support',
-                  'On-Time Delivery Guaranteed',
-                  'Competitive Pricing',
+                  'Qualité certifiée ISO',
+                  'Équipe d’ingénierie experte',
+                  'Support projet 24/7',
+                  'Livraison dans les délais garantie',
+                  'Tarifs compétitifs',
                 ].map((item, index) => (
                   <li key={index} className="flex items-center gap-3">
                     <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
@@ -224,12 +233,84 @@ export function HomePage() {
               />
               <div className="absolute -bottom-6 -left-6 bg-primary p-6 rounded-lg">
                 <div className="text-4xl mb-2">20+</div>
-                <div className="text-sm">Years Experience</div>
+                <div className="text-sm">Années d&apos;expérience</div>
               </div>
             </motion.div>
           </div>
         </div>
       </section>
+
+      {announcements.length > 0 && (
+        <section className="py-20 bg-white">
+          <div className="container mx-auto px-4">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-12"
+            >
+              <h2 className="text-4xl md:text-5xl text-secondary mb-3">
+                Actualités &amp; <span className="text-primary">Annonces</span>
+              </h2>
+              <p className="text-gray-600 max-w-xl mx-auto">
+                Dernières mises à jour, offres d&apos;emploi et promotions de MIS Metal Construction.
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {announcements.map((a, i) => {
+                const meta = a.type ? announcementMeta[a.type] : null;
+                const Icon = meta?.icon ?? Megaphone;
+                return (
+                  <motion.article
+                    key={a.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.1 }}
+                    className="bg-gray-50 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all flex flex-col"
+                  >
+                    {a.image_url && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={a.image_url}
+                        alt={a.title}
+                        className="w-full h-44 object-cover"
+                      />
+                    )}
+                    <div className="p-6 flex flex-col flex-1">
+                      <div className="flex items-center gap-3 mb-3">
+                        <span
+                          className={`inline-flex items-center gap-1.5 ${meta?.color ?? 'bg-gray-500'} text-white text-xs uppercase tracking-wider px-2.5 py-1 rounded-full`}
+                        >
+                          <Icon size={12} /> {meta?.label ?? 'Update'}
+                        </span>
+                        <span className="flex items-center gap-1 text-xs text-gray-500">
+                          <Calendar size={12} />
+                          {new Date(a.created_at).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <h3 className="text-lg text-secondary mb-2 line-clamp-2">{a.title}</h3>
+                      {a.body && (
+                        <p className="text-gray-600 text-sm line-clamp-3">{a.body}</p>
+                      )}
+                    </div>
+                  </motion.article>
+                );
+              })}
+            </div>
+
+            <div className="text-center mt-12">
+              <Link
+                href="/news"
+                className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-lg hover:brightness-110 transition-all"
+              >
+                Voir toutes les actualités <ArrowRight size={18} />
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
@@ -239,28 +320,28 @@ export function HomePage() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl md:text-5xl text-secondary mb-4">What Our Clients Say</h2>
+            <h2 className="text-4xl md:text-5xl text-secondary mb-4">Ce que disent nos clients</h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Trusted by industry leaders across the region
+              La confiance des leaders du secteur dans toute la région
             </p>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
-                name: 'John Anderson',
+                name: 'Jean Anderson',
                 company: 'ABC Manufacturing',
-                text: 'MIS Metal delivered our warehouse project on time and within budget. Outstanding quality!',
+                text: 'MIS Metal a livré notre projet d’entrepôt dans les temps et le budget. Qualité exceptionnelle !',
               },
               {
                 name: 'Sarah Mitchell',
                 company: 'Industrial Solutions Inc.',
-                text: 'Professional team, excellent communication, and superior craftsmanship. Highly recommended!',
+                text: 'Équipe professionnelle, communication excellente et savoir-faire supérieur. Vivement recommandé !',
               },
               {
                 name: 'David Chen',
                 company: 'Tech Logistics Ltd.',
-                text: 'The steel structure they built for us has been flawless. Great attention to detail!',
+                text: 'La structure en acier qu’ils ont construite est irréprochable. Quel souci du détail !',
               },
             ].map((testimonial, index) => (
               <motion.div
@@ -295,15 +376,15 @@ export function HomePage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-4xl md:text-5xl mb-6">Ready to Start Your Project?</h2>
+            <h2 className="text-4xl md:text-5xl mb-6">Prêt à démarrer votre projet ?</h2>
             <p className="text-xl mb-8 max-w-2xl mx-auto">
-              Get in touch with our team today for a free consultation and quote
+              Contactez notre équipe dès aujourd&apos;hui pour une consultation et un devis gratuits
             </p>
             <Link
               href="/contact"
               className="inline-block bg-white text-primary px-8 py-4 rounded-lg hover:bg-gray-100 transition-all transform hover:scale-105"
             >
-              Contact Us Now
+              Nous contacter
             </Link>
           </motion.div>
         </div>
@@ -314,26 +395,30 @@ export function HomePage() {
 
 function PartnersBar() {
   const partners = [
-    'STEEL INTERNATIONAL',
-    'GLOBAL METALS CO.',
-    'INDUSTRIAL PARTNERS',
-    'CONSTRUCTION ALLIANCE',
-    'METAL SUPPLIERS INC.',
-    'FORGE & BUILD',
-    'STEELWORKS UNITED',
-    'PRECISION METALS',
+    { name: 'Assad',    src: '/logoz/assad.svg' },
+    { name: 'Bershka',  src: '/logoz/bershka.svg' },
+    { name: 'Ennakl',   src: '/logoz/ennakl.svg' },
+    { name: 'IMM',      src: '/logoz/imm.svg' },
+    { name: 'Judy',     src: '/logoz/judy.svg' },
+    { name: 'SFBT',     src: '/logoz/sfbt.svg' },
+    { name: 'Zara',     src: '/logoz/zara.svg' },
   ];
 
   return (
     <div className="bg-white py-8 border-y border-gray-200 overflow-hidden">
       <div className="relative">
-        <div className="flex animate-scroll">
-          {[...partners, ...partners].map((partner, index) => (
+        <div className="flex animate-scroll w-max">
+          {[...partners, ...partners].map((p, index) => (
             <div
               key={index}
-              className="flex items-center justify-center px-12 whitespace-nowrap"
+              className="flex items-center justify-center px-10 shrink-0"
             >
-              <span className="text-gray-600 font-semibold">{partner}</span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={p.src}
+                alt={p.name}
+                className="h-12 w-auto object-contain grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all"
+              />
             </div>
           ))}
         </div>
@@ -341,12 +426,8 @@ function PartnersBar() {
       <style>
         {`
           @keyframes scroll {
-            0% {
-              transform: translateX(0);
-            }
-            100% {
-              transform: translateX(-50%);
-            }
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
           }
           .animate-scroll {
             animation: scroll 30s linear infinite;

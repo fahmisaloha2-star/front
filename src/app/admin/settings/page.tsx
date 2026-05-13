@@ -10,28 +10,28 @@ type Setting = { key: string; value: unknown };
 const FIELDS = [
   {
     key: "public.whatsapp_number",
-    label: "WhatsApp number (digits only, with country code)",
+    label: "Numéro WhatsApp (chiffres uniquement, avec indicatif)",
     placeholder: "21612345678",
     icon: <MessageCircle size={16} />,
     type: "text" as const,
   },
   {
     key: "public.delivery_fee",
-    label: "Delivery fee",
+    label: "Frais de livraison",
     placeholder: "15",
     icon: <Truck size={16} />,
     type: "number" as const,
   },
   {
     key: "public.currency",
-    label: "Currency",
+    label: "Devise",
     placeholder: "DT",
     icon: <DollarSign size={16} />,
     type: "text" as const,
   },
   {
     key: "public.company_name",
-    label: "Company name",
+    label: "Nom de la société",
     placeholder: "MIS Metal Construction",
     icon: <Building2 size={16} />,
     type: "text" as const,
@@ -70,7 +70,7 @@ export default function AdminSettingsPage() {
         return { key: f.key, value };
       });
       await api.put("/api/settings", { items });
-      toast.success("Settings saved");
+      toast.success("Paramètres enregistrés");
     } catch (err) {
       toast.error((err as Error).message);
     } finally {
@@ -88,9 +88,9 @@ export default function AdminSettingsPage() {
 
   return (
     <div className="p-8 max-w-3xl">
-      <h1 className="text-2xl font-bold text-secondary mb-1">Settings</h1>
+      <h1 className="text-2xl font-bold text-secondary mb-1">Paramètres</h1>
       <p className="text-sm text-gray-500 mb-6">
-        Configure the cart checkout flow (WhatsApp number, delivery fee, currency).
+        Configurez le passage en caisse (numéro WhatsApp, frais de livraison, devise).
       </p>
 
       <form onSubmit={handleSave} className="bg-white rounded-xl shadow-sm p-6 space-y-4">
@@ -115,7 +115,7 @@ export default function AdminSettingsPage() {
             className="bg-primary text-white px-5 py-2.5 rounded-lg hover:brightness-110 flex items-center gap-2 disabled:opacity-60"
           >
             {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-            Save settings
+            Enregistrer
           </button>
         </div>
       </form>

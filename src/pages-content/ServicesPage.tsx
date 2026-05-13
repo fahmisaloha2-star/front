@@ -37,7 +37,7 @@ export function ServicesPage() {
               transition={{ delay: 0.2 }}
               className="text-5xl md:text-6xl mb-6"
             >
-              Our <span className="text-primary">Services</span>
+              Nos <span className="text-primary">Services</span>
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -45,7 +45,7 @@ export function ServicesPage() {
               transition={{ delay: 0.4 }}
               className="text-xl text-gray-300 max-w-3xl mx-auto"
             >
-              Comprehensive metal construction solutions for every need
+              Des solutions complètes en construction métallique pour tous vos besoins
             </motion.p>
           </motion.div>
         </div>
@@ -58,7 +58,7 @@ export function ServicesPage() {
               <Loader2 className="animate-spin text-primary" size={40} />
             </div>
           ) : services.length === 0 ? (
-            <p className="text-center text-gray-500 py-12">No services available yet.</p>
+            <p className="text-center text-gray-500 py-12">Aucun service disponible pour le moment.</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
               {services.map((service, index) => {
@@ -116,22 +116,22 @@ export function ServicesPage() {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-4xl mb-6">Why Choose Our Services?</h2>
+            <h2 className="text-4xl mb-6">Pourquoi choisir nos services ?</h2>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
-                title: 'Certified Professionals',
-                description: 'All our technicians are certified and trained to the highest industry standards.',
+                title: 'Professionnels certifiés',
+                description: 'Tous nos techniciens sont certifiés et formés aux plus hauts standards du métier.',
               },
               {
-                title: 'Quality Materials',
-                description: 'We use only premium-grade steel and materials from trusted suppliers.',
+                title: 'Matériaux de qualité',
+                description: 'Nous n\'utilisons que de l\'acier et des matériaux de premier choix issus de fournisseurs de confiance.',
               },
               {
-                title: 'Timely Delivery',
-                description: 'We pride ourselves on meeting deadlines without compromising quality.',
+                title: 'Livraison à temps',
+                description: 'Nous tenons à respecter les délais sans compromettre la qualité.',
               },
             ].map((item, index) => (
               <motion.div
@@ -157,15 +157,15 @@ export function ServicesPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-4xl md:text-5xl mb-6">Need a Custom Solution?</h2>
+            <h2 className="text-4xl md:text-5xl mb-6">Besoin d&apos;une solution sur mesure ?</h2>
             <p className="text-xl mb-8 max-w-2xl mx-auto">
-              Our team is ready to discuss your specific requirements and provide a tailored solution
+              Notre équipe est prête à discuter de vos besoins spécifiques et à proposer une solution adaptée
             </p>
             <a
               href="/contact"
               className="inline-block bg-white text-primary px-8 py-4 rounded-lg hover:bg-gray-100 transition-all transform hover:scale-105"
             >
-              Get in Touch
+              Nous contacter
             </a>
           </motion.div>
         </div>

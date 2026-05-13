@@ -44,8 +44,14 @@ export function ShopPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [showAllCategories, setShowAllCategories] = useState(false);
-  const [priceRange, setPriceRange] = useState<[number, number]>([2, 2299]);
-  const [pendingPriceRange, setPendingPriceRange] = useState<[number, number]>([2, 2299]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 0]);
+  const [pendingPriceRange, setPendingPriceRange] = useState<[number, number]>([0, 0]);
+
+  const priceBounds = useMemo<[number, number]>(() => {
+    if (products.length === 0) return [0, 0];
+    const prices = products.map((p) => p.price);
+    return [Math.floor(Math.min(...prices)), Math.ceil(Math.max(...prices))];
+  }, [products]);
 
   useEffect(() => {
     api
@@ -57,6 +63,12 @@ export function ShopPage() {
       .then((d) => setCategories(d.items.map((c) => c.name)))
       .catch(() => setCategories([]));
   }, []);
+
+  useEffect(() => {
+    if (products.length === 0) return;
+    setPriceRange(priceBounds);
+    setPendingPriceRange(priceBounds);
+  }, [priceBounds, products.length]);
 
   const visibleCategories = showAllCategories ? categories : categories.slice(0, 5);
 
@@ -120,9 +132,9 @@ export function ShopPage() {
             transition={{ duration: 0.8 }}
             className="text-center"
           >
-            <h1 className="text-5xl md:text-6xl mb-6">Metal Supply Shop</h1>
+            <h1 className="text-5xl md:text-6xl mb-6">Boutique métallique</h1>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Premium quality steel, tools, and construction materials
+              Acier, outillage et matériaux de construction haut de gamme
             </p>
           </motion.div>
         </div>
@@ -144,7 +156,10 @@ export function ShopPage() {
                 className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
-            <button className="relative bg-primary text-white px-6 py-3 rounded-lg hover:bg-opacity-90 transition-all flex items-center gap-2">
+            <Link
+              href="/cart"
+              className="relative bg-primary text-white px-6 py-3 rounded-lg hover:bg-opacity-90 transition-all flex items-center gap-2"
+            >
               <ShoppingCart size={20} />
               <span>Panier</span>
               {getTotalItems() > 0 && (
@@ -156,7 +171,7 @@ export function ShopPage() {
                   {getTotalItems()}
                 </motion.span>
               )}
-            </button>
+            </Link>
           </div>
         </div>
       </div>
@@ -185,12 +200,13 @@ export function ShopPage() {
                     </span>
                   </div>
                   <Slider
-                    min={2}
-                    max={2299}
+                    min={priceBounds[0]}
+                    max={priceBounds[1]}
                     step={1}
                     value={pendingPriceRange}
                     onValueChange={(value) => setPendingPriceRange(value as [number, number])}
                     className="my-4"
+                    disabled={priceBounds[1] === priceBounds[0]}
                   />
                 </div>
 
@@ -237,7 +253,7 @@ export function ShopPage() {
                 </div>
               ) : filteredProducts.length === 0 ? (
                 <div className="text-center text-gray-500 py-20">
-                  No products match your filters.
+                  Aucun produit ne correspond à vos filtres.
                 </div>
               ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -340,15 +356,15 @@ export function ShopPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-4xl md:text-5xl mb-6">Need Bulk Orders?</h2>
+            <h2 className="text-4xl md:text-5xl mb-6">Besoin d&apos;une commande en gros ?</h2>
             <p className="text-xl mb-8 max-w-2xl mx-auto">
-              Contact our sales team for special pricing on large quantity orders
+              Contactez notre équipe commerciale pour un tarif spécial sur les grandes quantités
             </p>
             <a
               href="/contact"
               className="inline-block bg-white text-primary px-8 py-4 rounded-lg hover:bg-gray-100 transition-all transform hover:scale-105"
             >
-              Contact Sales
+              Contacter le service commercial
             </a>
           </motion.div>
         </div>

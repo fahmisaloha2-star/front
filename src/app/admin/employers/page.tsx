@@ -16,25 +16,25 @@ const columns: Column<Employer>[] = [
         <div className="w-12 h-12 bg-gray-100 rounded-full" />
       ),
   },
-  { key: "full_name", label: "Name" },
-  { key: "role", label: "Role" },
+  { key: "full_name", label: "Nom" },
+  { key: "role", label: "Fonction" },
   { key: "email", label: "Email" },
-  { key: "phone", label: "Phone" },
+  { key: "phone", label: "Téléphone" },
 ];
 
 const fields: Field[] = [
-  { name: "full_name", label: "Full name", required: true },
-  { name: "role", label: "Role / Title" },
+  { name: "full_name", label: "Nom complet", required: true },
+  { name: "role", label: "Fonction / Titre" },
   { name: "email", label: "Email", type: "email" },
-  { name: "phone", label: "Phone" },
+  { name: "phone", label: "Téléphone" },
   { name: "photo_url", label: "Photo", type: "image", uploadEndpoint: "/api/employers/upload" },
-  { name: "bio", label: "Bio", type: "textarea" },
+  { name: "bio", label: "Biographie", type: "textarea" },
 ];
 
 export default function AdminEmployersPage() {
   return (
     <CrudTable<Employer>
-      title="Team / Employers"
+      title="Équipe"
       resource="employers"
       listKey="items"
       itemKey="employer"

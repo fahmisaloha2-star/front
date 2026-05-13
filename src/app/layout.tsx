@@ -5,7 +5,7 @@ import { Providers } from "./providers";
 export const metadata: Metadata = {
   title: "MIS Metal Construction",
   description:
-    "Building excellence in metal construction and steel structures since 2005.",
+    "L'excellence en construction métallique et structures en acier depuis 2005.",
 };
 
 export default function RootLayout({
@@ -14,7 +14,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="fr">
       <body>
         <Providers>{children}</Providers>
       </body>

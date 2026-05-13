@@ -17,13 +17,13 @@ const columns: Column<Service>[] = [
         <div className="w-12 h-12 bg-gray-100 rounded" />
       ),
   },
-  { key: "title", label: "Title" },
+  { key: "title", label: "Titre" },
   {
     key: "short_desc",
     label: "Description",
     render: (r) => <span className="line-clamp-1 text-gray-600">{r.short_desc || "—"}</span>,
   },
-  { key: "published", label: "Published", render: (r) => (r.published ? "✓" : "—") },
+  { key: "published", label: "Publié", render: (r) => (r.published ? "✓" : "—") },
 ];
 
 const ICONS = [
@@ -38,13 +38,13 @@ const ICONS = [
 ];
 
 const fields: Field[] = [
-  { name: "title", label: "Title", required: true },
-  { name: "short_desc", label: "Short description" },
-  { name: "long_desc", label: "Long description", type: "textarea" },
-  { name: "icon", label: "Icon (lucide name)", type: "select", options: ICONS },
+  { name: "title", label: "Titre", required: true },
+  { name: "short_desc", label: "Description courte" },
+  { name: "long_desc", label: "Description longue", type: "textarea" },
+  { name: "icon", label: "Icône (nom lucide)", type: "select", options: ICONS },
   { name: "image_url", label: "Image", type: "image", uploadEndpoint: "/api/services/upload" },
-  { name: "position", label: "Position (sort order)", type: "number" },
-  { name: "published", label: "Published", type: "boolean" },
+  { name: "position", label: "Position (ordre)", type: "number" },
+  { name: "published", label: "Publié", type: "boolean" },
 ];
 
 export default function AdminServicesPage() {

@@ -107,8 +107,8 @@ function FloatTextarea({ id, name, label, value, onChange, required, rows = 5 }:
 
 // ── Step Indicator ──────────────────────────────────────────────────────────
 const STEPS = [
-  { label: 'Your Info', icon: User },
-  { label: 'Company', icon: Building2 },
+  { label: 'Vos infos', icon: User },
+  { label: 'Société', icon: Building2 },
   { label: 'Message', icon: MessageSquare },
 ];
 
@@ -156,7 +156,7 @@ function StepIndicator({ current }: { current: number }) {
 }
 
 // ── Service Type Selector ───────────────────────────────────────────────────
-const SERVICE_TYPES = ['Steel Structures', 'Metal Roofing', 'Industrial Buildings', 'Custom Fabrication', 'Renovation', 'Consultation'];
+const SERVICE_TYPES = ['Structures en acier', 'Couverture métallique', 'Bâtiments industriels', 'Fabrication sur mesure', 'Rénovation', 'Consultation'];
 
 function ServiceSelector({ selected, onToggle }: { selected: string[]; onToggle: (s: string) => void }) {
   return (
@@ -220,7 +220,7 @@ function SuccessScreen({ onReset }: { onReset: () => void }) {
         transition={{ delay: 0.4 }}
         className="text-3xl text-secondary mb-3"
       >
-        Message Sent!
+        Message envoyé !
       </motion.h3>
       <motion.p
         initial={{ opacity: 0, y: 20 }}
@@ -228,7 +228,7 @@ function SuccessScreen({ onReset }: { onReset: () => void }) {
         transition={{ delay: 0.5 }}
         className="text-gray-500 max-w-xs mb-8"
       >
-        Thank you for reaching out. Our team will respond within 24 hours.
+        Merci de nous avoir contactés. Notre équipe vous répondra sous 24 heures.
       </motion.p>
       <motion.button
         initial={{ opacity: 0, y: 20 }}
@@ -239,7 +239,7 @@ function SuccessScreen({ onReset }: { onReset: () => void }) {
         whileTap={{ scale: 0.96 }}
         className="px-8 py-3 bg-primary text-white rounded-xl font-medium"
       >
-        Send Another Message
+        Envoyer un autre message
       </motion.button>
     </motion.div>
   );
@@ -247,11 +247,11 @@ function SuccessScreen({ onReset }: { onReset: () => void }) {
 
 // ── FAQ Item ────────────────────────────────────────────────────────────────
 const FAQS = [
-  { q: 'What is your typical project timeline?', a: 'Project timelines vary based on scope and complexity. Most projects range from 4–12 weeks from design approval to completion, including fabrication and on-site installation.' },
-  { q: 'Do you provide free quotes?', a: 'Absolutely. We offer free initial consultations and detailed written quotes for all potential projects with no obligation.' },
-  { q: 'What areas do you serve?', a: 'We primarily serve the national territory but can accommodate large-scale projects regionally and internationally upon request.' },
-  { q: 'What certifications does MIS Metal hold?', a: 'MIS Metal Construction is ISO 9001 certified and holds all necessary trade licenses and safety certifications required by national standards.' },
-  { q: 'Can you handle both design and construction?', a: 'Yes — we offer a complete turnkey service from structural engineering and design through to fabrication, delivery, and installation.' },
+  { q: 'Quels sont vos délais habituels ?', a: 'Les délais varient selon la portée et la complexité. La plupart des projets durent entre 4 et 12 semaines de la validation du design à la livraison, incluant la fabrication et l\'installation.' },
+  { q: 'Proposez-vous des devis gratuits ?', a: 'Absolument. Nous offrons des consultations initiales et des devis écrits détaillés gratuits, sans engagement.' },
+  { q: 'Quelles zones couvrez-vous ?', a: 'Nous couvrons principalement le territoire national mais pouvons prendre en charge des projets de grande envergure régionaux et internationaux sur demande.' },
+  { q: 'Quelles certifications détient MIS Metal ?', a: 'MIS Metal Construction est certifiée ISO 9001 et détient toutes les licences professionnelles et certifications de sécurité requises par les normes nationales.' },
+  { q: 'Gérez-vous à la fois la conception et la construction ?', a: 'Oui — nous proposons un service clé en main complet : ingénierie structurelle, design, fabrication, livraison et installation.' },
 ];
 
 function FaqItem({ q, a, index }: { q: string; a: string; index: number }) {
@@ -352,17 +352,17 @@ export function ContactPage() {
   };
 
   const INFO_CARDS = [
-    { icon: MapPin, title: 'Our Address', lines: ['123 Industrial Avenue', 'Construction City, CC 12345'] },
-    { icon: Phone, title: 'Phone Numbers', lines: ['Office: +1 (555) 123-4567', 'Mobile: +1 (555) 987-6543'] },
-    { icon: Mail, title: 'Email Addresses', lines: ['info@mismetal.com', 'sales@mismetal.com'] },
-    { icon: Clock, title: 'Business Hours', lines: ['Mon–Fri: 8:00 AM – 6:00 PM', 'Saturday: 9:00 AM – 2:00 PM'] },
+    { icon: MapPin, title: 'Notre adresse', lines: ['123 Industrial Avenue', 'Construction City, CC 12345'] },
+    { icon: Phone, title: 'Téléphones', lines: ['Bureau : +1 (555) 123-4567', 'Mobile : +1 (555) 987-6543'] },
+    { icon: Mail, title: 'Adresses email', lines: ['info@mismetal.com', 'sales@mismetal.com'] },
+    { icon: Clock, title: "Horaires d'ouverture", lines: ['Lun–Ven : 8h00 – 18h00', 'Samedi : 9h00 – 14h00'] },
   ];
 
   const FEATURES = [
-    { icon: Zap, label: 'Fast Response', desc: 'Within 24 hours' },
-    { icon: Shield, label: 'Secure & Private', desc: 'Your data is safe' },
-    { icon: Star, label: 'Expert Team', desc: '20+ years experience' },
-    { icon: Headphones, label: '24/7 Support', desc: 'For urgent matters' },
+    { icon: Zap, label: 'Réponse rapide', desc: 'Sous 24 heures' },
+    { icon: Shield, label: 'Confidentialité', desc: 'Vos données sont protégées' },
+    { icon: Star, label: 'Équipe experte', desc: '20+ ans d\'expérience' },
+    { icon: Headphones, label: 'Support 24/7', desc: 'Pour les urgences' },
   ];
 
   return (
@@ -396,7 +396,7 @@ export function ContactPage() {
             transition={{ duration: 0.5 }}
             className="inline-flex items-center gap-2 bg-primary/20 border border-primary/30 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6"
           >
-            <Mail size={14} /> Get In Touch
+            <Mail size={14} /> Contactez-nous
           </motion.div>
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
@@ -404,9 +404,9 @@ export function ContactPage() {
             transition={{ duration: 0.7, delay: 0.1 }}
             className="text-5xl md:text-7xl mb-6 tracking-tight"
           >
-            Let's Build
+            Construisons
             <br />
-            <span className="text-primary">Something Great</span>
+            <span className="text-primary">ensemble</span>
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -414,7 +414,7 @@ export function ContactPage() {
             transition={{ duration: 0.7, delay: 0.3 }}
             className="text-gray-400 text-lg max-w-2xl mx-auto"
           >
-            Reach out to our expert team for quotes, consultations, or any questions about your metal construction project.
+            Contactez notre équipe d&apos;experts pour des devis, des consultations ou toute question sur votre projet de construction métallique.
           </motion.p>
 
           {/* feature pills */}
@@ -479,8 +479,8 @@ export function ContactPage() {
               ) : (
                 <>
                   <div className="mb-8">
-                    <h2 className="text-3xl text-secondary mb-2">Send Us a Message</h2>
-                    <p className="text-gray-400 text-sm">Fill out the form and we'll respond within 24 hours.</p>
+                    <h2 className="text-3xl text-secondary mb-2">Envoyez-nous un message</h2>
+                    <p className="text-gray-400 text-sm">Remplissez le formulaire et nous répondrons sous 24 heures.</p>
                   </div>
 
                   <StepIndicator current={step} />
@@ -500,9 +500,9 @@ export function ContactPage() {
                             transition={{ duration: 0.35, ease: 'easeInOut' }}
                             className="space-y-5"
                           >
-                            <FloatInput id="name" name="name" label="Full Name" value={formData.name} onChange={handleChange} required icon={<User size={18} />} />
-                            <FloatInput id="email" name="email" type="email" label="Email Address" value={formData.email} onChange={handleChange} required icon={<Mail size={18} />} />
-                            <FloatInput id="phone" name="phone" type="tel" label="Phone Number" value={formData.phone} onChange={handleChange} icon={<Phone size={18} />} />
+                            <FloatInput id="name" name="name" label="Nom complet" value={formData.name} onChange={handleChange} required icon={<User size={18} />} />
+                            <FloatInput id="email" name="email" type="email" label="Adresse email" value={formData.email} onChange={handleChange} required icon={<Mail size={18} />} />
+                            <FloatInput id="phone" name="phone" type="tel" label="Téléphone" value={formData.phone} onChange={handleChange} icon={<Phone size={18} />} />
                           </motion.div>
                         )}
 
@@ -518,10 +518,10 @@ export function ContactPage() {
                             transition={{ duration: 0.35, ease: 'easeInOut' }}
                             className="space-y-5"
                           >
-                            <FloatInput id="company" name="company" label="Company Name" value={formData.company} onChange={handleChange} icon={<Building2 size={18} />} />
-                            <FloatInput id="position" name="position" label="Your Position / Role" value={formData.position} onChange={handleChange} icon={<User size={18} />} />
+                            <FloatInput id="company" name="company" label="Nom de l'entreprise" value={formData.company} onChange={handleChange} icon={<Building2 size={18} />} />
+                            <FloatInput id="position" name="position" label="Votre fonction" value={formData.position} onChange={handleChange} icon={<User size={18} />} />
                             <div>
-                              <p className="text-sm text-gray-500 mb-3 font-medium">Services of Interest</p>
+                              <p className="text-sm text-gray-500 mb-3 font-medium">Services souhaités</p>
                               <ServiceSelector selected={formData.services} onToggle={toggleService} />
                             </div>
                           </motion.div>
@@ -539,8 +539,8 @@ export function ContactPage() {
                             transition={{ duration: 0.35, ease: 'easeInOut' }}
                             className="space-y-5"
                           >
-                            <FloatInput id="budget" name="budget" label="Estimated Budget (optional)" value={formData.budget} onChange={handleChange} icon={<ArrowRight size={18} />} />
-                            <FloatTextarea id="message" name="message" label="Tell us about your project" value={formData.message} onChange={handleChange} required rows={5} />
+                            <FloatInput id="budget" name="budget" label="Budget estimé (optionnel)" value={formData.budget} onChange={handleChange} icon={<ArrowRight size={18} />} />
+                            <FloatTextarea id="message" name="message" label="Parlez-nous de votre projet" value={formData.message} onChange={handleChange} required rows={5} />
                           </motion.div>
                         )}
                       </AnimatePresence>
@@ -560,7 +560,7 @@ export function ContactPage() {
                             whileTap={{ scale: 0.97 }}
                             className="flex items-center gap-2 px-6 py-3.5 border-2 border-gray-200 text-secondary rounded-xl hover:border-primary hover:text-primary transition-colors duration-200 font-medium"
                           >
-                            <ChevronLeft size={18} /> Back
+                            <ChevronLeft size={18} /> Retour
                           </motion.button>
                         )}
                       </AnimatePresence>
@@ -574,16 +574,16 @@ export function ContactPage() {
                         style={{ maxWidth: step === 0 ? '100%' : undefined }}
                       >
                         {step === STEPS.length - 1 ? (
-                          <><Send size={18} /> Send Message</>
+                          <><Send size={18} /> Envoyer</>
                         ) : (
-                          <>Continue <ChevronRight size={18} /></>
+                          <>Continuer <ChevronRight size={18} /></>
                         )}
                       </motion.button>
                     </div>
 
                     {/* Progress text */}
                     <p className="text-center text-xs text-gray-400 mt-4">
-                      Step {step + 1} of {STEPS.length}
+                      Étape {step + 1} sur {STEPS.length}
                     </p>
                   </form>
                 </>
@@ -620,8 +620,8 @@ export function ContactPage() {
                   transition={{ duration: 4, repeat: Infinity }}
                 />
                 <Headphones size={28} className="text-primary mb-4 relative z-10" />
-                <h3 className="text-white mb-1 relative z-10">Emergency Support</h3>
-                <p className="text-gray-400 text-sm mb-4 relative z-10">For urgent matters — available 24/7 for existing clients.</p>
+                <h3 className="text-white mb-1 relative z-10">Support d&apos;urgence</h3>
+                <p className="text-gray-400 text-sm mb-4 relative z-10">Pour les urgences — disponible 24/7 pour les clients existants.</p>
                 <div className="text-primary text-2xl font-medium relative z-10">+1 (555) 911-HELP</div>
               </motion.div>
 
@@ -633,7 +633,7 @@ export function ContactPage() {
                 transition={{ duration: 0.6, delay: 0.35 }}
                 className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm"
               >
-                <h3 className="text-secondary mb-4 font-medium">Connect With Us</h3>
+                <h3 className="text-secondary mb-4 font-medium">Suivez-nous</h3>
                 <div className="flex gap-3 flex-wrap">
                   {['LinkedIn', 'Facebook', 'Instagram', 'YouTube'].map((platform, i) => (
                     <motion.a
@@ -663,8 +663,8 @@ export function ContactPage() {
             className="text-center mb-12"
           >
             <span className="inline-block bg-primary/10 text-primary px-4 py-1.5 rounded-full text-sm font-medium mb-4">FAQ</span>
-            <h2 className="text-4xl text-secondary mb-4">Frequently Asked Questions</h2>
-            <p className="text-gray-500">Everything you need to know before getting started.</p>
+            <h2 className="text-4xl text-secondary mb-4">Questions fréquentes</h2>
+            <p className="text-gray-500">Tout ce qu&apos;il faut savoir avant de commencer.</p>
           </motion.div>
           <div className="space-y-3">
             {FAQS.map((f, i) => <FaqItem key={i} {...f} index={i} />)}
@@ -682,8 +682,8 @@ export function ContactPage() {
             className="flex flex-col md:flex-row items-center justify-between gap-8"
           >
             <div className="text-white text-center md:text-left">
-              <h2 className="text-3xl mb-2">Ready to start your project?</h2>
-              <p className="text-white/80">Our team is ready to bring your vision to life.</p>
+              <h2 className="text-3xl mb-2">Prêt à démarrer votre projet ?</h2>
+              <p className="text-white/80">Notre équipe est prête à donner vie à votre vision.</p>
             </div>
             <motion.a
               href="tel:+15551234567"
@@ -692,7 +692,7 @@ export function ContactPage() {
               className="flex items-center gap-3 bg-white/10 border-2 border-white/30 text-white px-8 py-4 rounded-2xl font-medium backdrop-blur-sm transition-colors duration-300 flex-shrink-0"
             >
               <Phone size={20} />
-              Call Us Now
+              Appelez-nous
               <ArrowRight size={18} />
             </motion.a>
           </motion.div>

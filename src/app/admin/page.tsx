@@ -33,16 +33,16 @@ export default function AdminDashboard() {
   }, []);
 
   const cards = [
-    { key: "products", label: "Products", value: stats.products, icon: Package, href: "/admin/products", color: "bg-orange-100 text-primary" },
-    { key: "projects", label: "Projects", value: stats.projects, icon: Building2, href: "/admin/projects", color: "bg-blue-100 text-blue-600" },
-    { key: "employers", label: "Team", value: stats.employers, icon: Users, href: "/admin/employers", color: "bg-green-100 text-green-600" },
-    { key: "announcements", label: "Announcements", value: stats.announcements, icon: Megaphone, href: "/admin/announcements", color: "bg-purple-100 text-purple-600" },
+    { key: "products", label: "Produits", value: stats.products, icon: Package, href: "/admin/products", color: "bg-orange-100 text-primary" },
+    { key: "projects", label: "Projets", value: stats.projects, icon: Building2, href: "/admin/projects", color: "bg-blue-100 text-blue-600" },
+    { key: "employers", label: "Équipe", value: stats.employers, icon: Users, href: "/admin/employers", color: "bg-green-100 text-green-600" },
+    { key: "announcements", label: "Annonces", value: stats.announcements, icon: Megaphone, href: "/admin/announcements", color: "bg-purple-100 text-purple-600" },
   ];
 
   return (
     <div className="p-8">
-      <h1 className="text-2xl font-bold text-secondary mb-1">Dashboard</h1>
-      <p className="text-sm text-gray-500 mb-8">Overview of your data</p>
+      <h1 className="text-2xl font-bold text-secondary mb-1">Tableau de bord</h1>
+      <p className="text-sm text-gray-500 mb-8">Aperçu de vos données</p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {cards.map((c) => {

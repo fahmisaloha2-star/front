@@ -54,14 +54,14 @@ const mapProduct = (p: ApiProduct): UiProduct => ({
   brand: "MIS Steel",
   sku: p.id.slice(0, 8).toUpperCase(),
   price: Number(p.price),
-  image: p.image_url || "https://placehold.co/600x400?text=No+image",
+  image: p.image_url || "https://placehold.co/600x400?text=Aucune+image",
   gallery: p.image_url ? [p.image_url] : [],
   rating: 4.7,
   reviewCount: 0,
   reviews: [],
   inStock: (p.stock ?? 0) > 0,
   stockQuantity: p.stock ?? 0,
-  deliveryTime: "Contact us for delivery time",
+  deliveryTime: "Nous contacter pour le délai de livraison",
   weight: "—",
   packageDimensions: "—",
   description: p.description || "",
@@ -117,13 +117,13 @@ export function ProductDetailPage() {
     return (
       <div className="min-h-screen pt-32 pb-20 bg-gray-50">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-3xl text-secondary mb-4">Product not found</h1>
-          <p className="text-gray-600 mb-8">The product you are looking for does not exist.</p>
+          <h1 className="text-3xl text-secondary mb-4">Produit introuvable</h1>
+          <p className="text-gray-600 mb-8">Le produit que vous cherchez n&apos;existe pas.</p>
           <Link
             href="/shop"
             className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-lg hover:bg-opacity-90 transition-all"
           >
-            <ChevronLeft size={18} /> Back to shop
+            <ChevronLeft size={18} /> Retour à la boutique
           </Link>
         </div>
       </div>
@@ -133,7 +133,7 @@ export function ProductDetailPage() {
   const gallery = product.gallery.length > 0 ? product.gallery : [product.image];
 
   const formatDate = (iso: string) =>
-    new Date(iso).toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" });
+    new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" });
 
   const ratingDistribution = [5, 4, 3, 2, 1].map((star) => {
     const count = product.reviews.filter((r) => r.rating === star).length;
@@ -150,11 +150,11 @@ export function ProductDetailPage() {
         <div className="container mx-auto px-4 py-4">
           <nav className="flex items-center gap-2 text-sm text-gray-600">
             <Link href="/" className="hover:text-primary">
-              Home
+              Accueil
             </Link>
             <span>/</span>
             <Link href="/shop" className="hover:text-primary">
-              Shop
+              Boutique
             </Link>
             <span>/</span>
             <span className="text-secondary">{product.name}</span>
@@ -168,7 +168,7 @@ export function ProductDetailPage() {
             href="/shop"
             className="inline-flex items-center gap-2 text-gray-600 hover:text-primary mb-6 transition-colors"
           >
-            <ChevronLeft size={18} /> Back to shop
+            <ChevronLeft size={18} /> Retour à la boutique
           </Link>
 
           <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
@@ -188,14 +188,14 @@ export function ProductDetailPage() {
                   {!product.inStock && (
                     <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
                       <span className="bg-red-500 text-white px-6 py-3 rounded-lg text-lg">
-                        Out of Stock
+                        Rupture de stock
                       </span>
                     </div>
                   )}
                   <div className="absolute top-4 right-4 bg-white px-3 py-1.5 rounded-full text-sm flex items-center gap-1 shadow-sm">
                     <Star className="text-yellow-500 fill-yellow-500" size={16} />
                     <span className="text-secondary font-semibold">{product.rating}</span>
-                    {product.reviewCount && (
+                    {product.reviewCount > 0 && (
                       <span className="text-gray-500">({product.reviewCount})</span>
                     )}
                   </div>
@@ -236,7 +236,7 @@ export function ProductDetailPage() {
                       product.inStock ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
                     }`}
                   >
-                    {product.inStock ? "In stock" : "Out of stock"}
+                    {product.inStock ? "En stock" : "Rupture de stock"}
                   </span>
                 </div>
 
@@ -268,7 +268,7 @@ export function ProductDetailPage() {
                     className="flex-1 bg-primary text-white px-6 py-3 rounded-lg hover:bg-opacity-90 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <ShoppingCart size={20} />
-                    Add to cart
+                    Ajouter au panier
                   </motion.button>
                 </div>
 
@@ -276,39 +276,39 @@ export function ProductDetailPage() {
                   href="/contact"
                   className="text-center bg-secondary text-white px-6 py-3 rounded-lg hover:bg-opacity-90 transition-all mb-8"
                 >
-                  Request a quote
+                  Demander un devis
                 </Link>
 
                 <div className="grid grid-cols-2 gap-x-6 gap-y-3 py-5 px-5 bg-gray-50 rounded-lg mb-6 text-sm">
                   <div className="flex items-center gap-2">
                     <Hash className="text-gray-400" size={16} />
                     <div>
-                      <div className="text-xs text-gray-500">SKU</div>
+                      <div className="text-xs text-gray-500">Réf.</div>
                       <div className="text-secondary font-medium">{product.sku}</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <Package className="text-gray-400" size={16} />
                     <div>
-                      <div className="text-xs text-gray-500">Available</div>
+                      <div className="text-xs text-gray-500">Disponible</div>
                       <div className="text-secondary font-medium">
                         {product.stockQuantity > 0
-                          ? `${product.stockQuantity} in stock`
-                          : "Out of stock"}
+                          ? `${product.stockQuantity} en stock`
+                          : "Rupture de stock"}
                       </div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <Clock className="text-gray-400" size={16} />
                     <div>
-                      <div className="text-xs text-gray-500">Delivery</div>
+                      <div className="text-xs text-gray-500">Livraison</div>
                       <div className="text-secondary font-medium">{product.deliveryTime}</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <Package className="text-gray-400" size={16} />
                     <div>
-                      <div className="text-xs text-gray-500">Weight</div>
+                      <div className="text-xs text-gray-500">Poids</div>
                       <div className="text-secondary font-medium">{product.weight}</div>
                     </div>
                   </div>
@@ -318,22 +318,22 @@ export function ProductDetailPage() {
                   <div className="flex items-start gap-3">
                     <Truck className="text-primary flex-shrink-0 mt-1" size={20} />
                     <div>
-                      <div className="text-sm text-secondary font-semibold">Delivery</div>
-                      <div className="text-xs text-gray-500">Nationwide</div>
+                      <div className="text-sm text-secondary font-semibold">Livraison</div>
+                      <div className="text-xs text-gray-500">Sur tout le territoire</div>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <ShieldCheck className="text-primary flex-shrink-0 mt-1" size={20} />
                     <div>
-                      <div className="text-sm text-secondary font-semibold">Quality</div>
-                      <div className="text-xs text-gray-500">Certified standards</div>
+                      <div className="text-sm text-secondary font-semibold">Qualité</div>
+                      <div className="text-xs text-gray-500">Normes certifiées</div>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <Wrench className="text-primary flex-shrink-0 mt-1" size={20} />
                     <div>
                       <div className="text-sm text-secondary font-semibold">Support</div>
-                      <div className="text-xs text-gray-500">Installation included</div>
+                      <div className="text-xs text-gray-500">Installation incluse</div>
                     </div>
                   </div>
                 </div>
@@ -342,7 +342,14 @@ export function ProductDetailPage() {
 
             <div className="border-t border-gray-200 px-6 lg:px-10 py-8">
               <div className="flex gap-6 border-b border-gray-200 mb-6 overflow-x-auto">
-                {(["description", "specifications", "features", "reviews"] as const).map((tab) => (
+                {(["description", "specifications", "features", "reviews"] as const).map((tab) => {
+                  const labels = {
+                    description: "Description",
+                    specifications: "Spécifications",
+                    features: "Caractéristiques",
+                    reviews: "Avis",
+                  } as const;
+                  return (
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
@@ -350,7 +357,7 @@ export function ProductDetailPage() {
                       activeTab === tab ? "text-primary" : "text-gray-500 hover:text-secondary"
                     }`}
                   >
-                    {tab}
+                    {labels[tab]}
                     {tab === "reviews" && (
                       <span className="ml-1 text-xs text-gray-400">({product.reviewCount})</span>
                     )}
@@ -361,7 +368,8 @@ export function ProductDetailPage() {
                       />
                     )}
                   </button>
-                ))}
+                  );
+                })}
               </div>
 
               <div className="text-gray-700 leading-relaxed">
@@ -378,8 +386,8 @@ export function ProductDetailPage() {
                   >
                     {Object.entries({
                       ...product.specifications,
-                      "Package dimensions": product.packageDimensions,
-                      "Product SKU": product.sku,
+                      "Dimensions": product.packageDimensions,
+                      "Référence": product.sku,
                     }).map(([key, value]) => (
                       <div key={key} className="flex justify-between py-3 border-b border-gray-100">
                         <span className="text-gray-500">{key}</span>
@@ -423,13 +431,13 @@ export function ProductDetailPage() {
                           ))}
                         </div>
                         <div className="text-sm text-gray-500">
-                          Based on {product.reviewCount} reviews
+                          Sur la base de {product.reviewCount} avis
                         </div>
                       </div>
                       <div className="md:col-span-2 space-y-2">
                         {ratingDistribution.map(({ star, count, percent }) => (
                           <div key={star} className="flex items-center gap-3 text-sm">
-                            <span className="w-12 text-gray-600">{star} star</span>
+                            <span className="w-12 text-gray-600">{star} étoile{star > 1 ? "s" : ""}</span>
                             <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
                               <div
                                 className="h-full bg-yellow-500 transition-all"
@@ -464,7 +472,7 @@ export function ProductDetailPage() {
                                   </span>
                                   {review.verified && (
                                     <span className="inline-flex items-center gap-1 text-xs text-green-600">
-                                      <BadgeCheck size={14} /> Verified
+                                      <BadgeCheck size={14} /> Vérifié
                                     </span>
                                   )}
                                 </div>
@@ -500,7 +508,7 @@ export function ProductDetailPage() {
 
           {relatedProducts.length > 0 && (
             <div className="mt-16">
-              <h2 className="text-2xl lg:text-3xl text-secondary mb-8">Related products</h2>
+              <h2 className="text-2xl lg:text-3xl text-secondary mb-8">Produits similaires</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {relatedProducts.map((p) => (
                   <Link
